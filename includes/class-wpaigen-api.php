@@ -86,9 +86,10 @@ class WPaigen_Api {
         return $this->_send_request( 'api/articles/generate', 'POST', $body, $headers );
     }
 
-    public function create_transaction( $email ) {
+    public function create_transaction( $email, $domain ) {
         $body = array(
             'email' => $email,
+            'domain' => $domain,
         );
         return $this->_send_request( 'api/transactions/create', 'POST', $body );
     }
