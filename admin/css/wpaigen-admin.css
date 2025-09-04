@@ -1,0 +1,755 @@
+/* Basic Reset & Body Styling */
+.wpaigen-dashboard,
+.wpaigen-generate-page,
+.wpaigen-license-page {
+    font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #2a2a4a 0%, #1a1a2e 100%);
+    color: #e0e0f0;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.wpaigen-dashboard .wp-heading-inline,
+.wpaigen-generate-page .wp-heading-inline,
+.wpaigen-license-page .wp-heading-inline {
+    color: #fff;
+    font-size: 2.2em;
+    margin-bottom: 25px;
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(100, 255, 255, 0.3);
+}
+
+/* Header */
+.wpaigen-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.wpaigen-logo {
+    font-size: 2.8em;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #64ffda;
+    text-shadow: 0 0 15px rgba(100, 255, 218, 0.5);
+    background: linear-gradient(45deg, #64ffda, #007bff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    line-height: 1.3;
+    white-space: nowrap
+}
+.wpaigen-logo span {
+    font-size: 0.5em;
+    vertical-align: super;
+    font-weight: 600;
+    opacity: 1;
+    margin-left: 5px;
+    color: #a0a0ff;
+}
+.wpaigen-header p {
+    font-size: 1.3em;
+    color: #c0c0e0;
+    margin-top: 5px;
+}
+
+/* Cards & Grid Layout */
+.wpaigen-card {
+    background: #2a2a3e;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 25px;
+    border: 1px solid rgba(100, 255, 218, 0.1);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.wpaigen-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 20px rgba(100, 255, 218, 0.2);
+}
+
+.wpaigen-card p {
+    font-size: 1.2em;
+}
+
+.wpaigen-card h2 {
+    color: #64ffda;
+    font-size: 1.8em;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(100, 255, 218, 0.2);
+    padding-bottom: 10px;
+}
+
+.wpaigen-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+.wpaigen-grid-2-col {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+}
+
+/* License Page Layout */
+.wpaigen-license-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+    .wpaigen-license-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+.wpaigen-contact-card h2 .dashicons {
+    vertical-align: middle;
+    margin-right: 8px;
+    font-size: 1.1em;
+}
+
+
+@media (max-width: 768px) {
+    .wpaigen-grid-2-col {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Usage Overview Card */
+.wpaigen-usage-card .usage-stats {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    text-align: center;
+    gap: 15px;
+}
+.wpaigen-usage-card .stat-item {
+    flex: 1;
+    background: #1a1a2e;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.wpaigen-usage-card .stat-label {
+    display: block;
+    font-size: 1.2em;
+    color: #a0a0c0;
+    margin-bottom: 15px;
+}
+.wpaigen-usage-card .stat-value {
+    font-size: 2em;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+.wpaigen-usage-card .wpaigen-plan-badge {
+    background: linear-gradient(45deg, #007bff, #8a2be2);
+    padding: 6px 25px;
+    border-radius: 20px;
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #fff !important;
+    display: inline-block;
+    text-shadow: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.wpaigen-usage-card .wpaigen-plan-badge.pro {
+    background: linear-gradient(45deg, #64ffda, #007bff);
+    color: #1a1a2e;
+}
+
+
+/* Buttons */
+.wpaigen-dashboard .wpaigen-button,
+.wpaigen-license-page .wpaigen-button {
+    font-size: 1.2em;
+    padding: 5px 25px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-shadow: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.wpaigen-button.button-primary {
+    font-size: 1.2em;
+    padding: 5px 25px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(45deg, #007bff, #8a2be2);
+    color: #fff;
+}
+.wpaigen-button.button-primary:hover {
+    background: linear-gradient(45deg, #8a2be2, #007bff);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.wpaigen-button.button-secondary {
+    font-size: 1.2em;
+    padding: 5px 25px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: linear-gradient(45deg, #5a6268, #343a40);
+    color: #e0e0f0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.wpaigen-button.button-secondary:hover {
+    background: linear-gradient(45deg, #343a40, #5a6268);
+    transform: translateY(-2px);
+    color: #fff;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+
+/* Upgrade to Pro Section */
+.wpaigen-section-upgrade .wpaigen-pro-banner {
+    background: linear-gradient(135deg, #1a1a1a, #2b2b3c, #9a4dff);
+    color: #fff;
+    text-align: center;
+    padding: 40px;
+    border: none;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 30px rgba(138, 43, 226, 0.4);
+}
+.wpaigen-section-upgrade .wpaigen-pro-banner h2 {
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    margin-bottom: 25px;
+    font-size: 2.2em;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+.wpaigen-section-upgrade .pro-benefits ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px 40px;
+}
+.wpaigen-section-upgrade .pro-benefits li {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+.wpaigen-section-upgrade .pro-benefits li .dashicons {
+    color: #64ffda;
+    margin-right: 10px;
+    font-size: 1.5em;
+    vertical-align: middle;
+}
+.wpaigen-section-upgrade .pro-price {
+    font-size: 1.8em;
+    font-weight: 700;
+    color: #64ffda;
+    display: block;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+}
+.wpaigen-section-upgrade .coming-soon {
+    font-size: 0.7em;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+    margin-left: 5px;
+}
+.wpaigen-hidden {
+    display: none !important;
+}
+
+
+/* Forms */
+.wpaigen-form-group {
+    margin-bottom: 20px;
+}
+.wpaigen-form-group label {
+    display: block;
+    font-size: 1.2em;
+    margin-bottom: 8px;
+    color: #e0e0f0;
+}
+.wpaigen-form-group input[type="text"],
+.wpaigen-form-group input[type="email"],
+.wpaigen-form-group input[type="number"],
+.wpaigen-form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    border-radius: 8px;
+    background-color: #1a1a2e;
+    color: #e0e0f0;
+    font-size: 1.2em;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.wpaigen-form-group input[type="text"]:focus,
+.wpaigen-form-group input[type="email"]:focus,
+.wpaigen-form-group input[type="number"]:focus,
+.wpaigen-form-group select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+    outline: none;
+}
+.wpaigen-form-group select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20fill%3D%22%23e0e0f0%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M7%2C10L12%2C15L17%2C10H7Z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+    padding-right: 35px;
+}
+
+/* Disabled Pro Features */
+.wpaigen-form-group .pro-feature {
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    background-color: #202030 !important;
+}
+.wpaigen-form-group .pro-feature:before {
+    content: "\f160";
+    font-family: dashicons;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+.wpaigen-form-group .pro-info {
+    font-size: 1em;
+    color: #a0a0c0;
+    margin-top: 5px;
+    display: block;
+}
+.wpaigen-form-group .pro-info .dashicons {
+    font-size: 1em;
+    vertical-align: middle;
+    margin-right: 3px;
+    color: #f7a04f;
+}
+input[type="number"][readonly],
+select[readonly],
+select option[disabled] {
+    cursor: not-allowed;
+}
+
+/* Checkbox */
+.wpaigen-form-group.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-top: 25px;
+    margin-bottom: 30px;
+}
+.wpaigen-form-group.checkbox-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+    transform: scale(1.3);
+    cursor: pointer;
+}
+.wpaigen-form-group.checkbox-group label {
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+/* Messages (Success/Error) */
+.wpaigen-message {
+    margin-top: 20px !important;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1.3em;
+    line-height: 1.6;
+    color: #fff;
+    text-align: center;
+    border: 2px solid #fff !important;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    box-sizing: border-box;
+    white-space: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.wpaigen-message.active {
+    opacity: 1;
+    height: auto;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    min-height: 50px;
+}
+.wpaigen-message.success {
+    background-color: #4CAF50;
+}
+.wpaigen-message.error {
+    background-color: #f44336;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+.wpaigen-message.info {
+    background-color: #2196F3;
+}
+
+/* Tips Section (Sidebar) */
+.wpaigen-tips-card ul {
+    list-style: none;
+    padding: 0;
+}
+.wpaigen-tips-card li {
+    margin-bottom: 15px;
+    line-height: 1.5;
+    font-size: 1.2em;
+}
+.wpaigen-tips-card li .dashicons {
+    color: #64ffda;
+    font-size: 1.4em;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+.wpaigen-tips-card strong {
+    color: #e0e0f0;
+}
+
+/* Contact Info (License Page) */
+.wpaigen-contact-card .contact-info p {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.wpaigen-contact-card .contact-info .dashicons {
+    color: #007bff;
+    margin-right: 10px;
+    font-size: 1.4em;
+}
+.wpaigen-contact-card .contact-info a {
+    color: #64ffda;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+.wpaigen-contact-card .contact-info a:hover {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+
+/* Modals (Payment, Success) */
+.wpaigen-modal {
+    display: none;
+    position: fixed;
+    z-index: 100000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+}
+
+.wpaigen-modal-content {
+    background: linear-gradient(135deg, #2a2a3e, #1a1a2e);
+    margin: auto;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    position: relative;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.wpaigen-secure-payment-info {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.wpaigen-form-section {
+    margin-bottom: 25px;
+}
+
+.wpaigen-label {
+    display: block;
+    text-align: left;
+    margin-bottom: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.wpaigen-modal-content #wpaigen-email-input {
+    width: calc(100% - 24px);
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #007bff;
+    border-radius: 8px;
+    background-color: #1a1a2e;
+    color: #e0e0f0;
+    font-size: 1.1em;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wpaigen-modal-content #wpaigen-email-input:focus {
+    border-color: #64ffda;
+    box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.3);
+    outline: none;
+}
+
+.wpaigen-email-helper-text {
+    font-size: 0.9em;
+    color: #a0a0c0;
+    margin-top: -10px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.wpaigen-modal-content .wpaigen-button.button-primary {
+    width: 100%;
+    padding: 15px 25px;
+    font-size: 1.3em;
+    border-radius: 10px;
+}
+
+.wpaigen-secure-text {
+    font-size: 0.85em;
+    color: #888;
+    margin: 0;
+}
+
+/* Header Section */
+.wpaigen-modal-header-section {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.wpaigen-crown-icon {
+    font-size: 48px;
+    color: #FFD700;
+    margin-bottom: 15px;
+    display: block;
+    text-align: center;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.wpaigen-product-title {
+    font-size: 2.2em;
+    font-weight: 700;
+    color: #ffffff;
+    margin-top: 0;
+    margin-bottom: 8px;
+    text-shadow: 0 0 10px rgba(100, 255, 255, 0.2);
+}
+
+.wpaigen-product-tagline {
+    font-size: 1.1em;
+    color: #c0c0e0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* Price Section */
+.wpaigen-price-section {
+    text-align: center;
+    margin-bottom: 25px;
+    padding: 15px 0;
+    font-family: sans-serif;
+    border-top: 1px dashed rgba(100, 255, 218, 0.1);
+    border-bottom: 1px dashed rgba(100, 255, 218, 0.1);
+}
+
+.wpaigen-price {
+    font-size: 3.5em;
+    font-weight: 800;
+    color: #64ffda;
+    display: block;
+    line-height: 1.4;
+    margin-bottom: 5px;
+    text-shadow: 0 0 20px rgba(100, 255, 218, 0.7);
+}
+
+.wpaigen-price-note {
+    font-size: 0.9em;
+    color: #a0a0c0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* Benefits Section */
+.wpaigen-benefits-section {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.wpaigen-benefits-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.wpaigen-benefits-list li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    color: #e0e0f0;
+}
+
+.wpaigen-icon-check {
+    margin-right: 10px;
+    font-size: 1.3em;
+}
+
+.wpaigen-modal-content input[type="email"] {
+    width: calc(100% - 30px);
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border: 1px solid #007bff;
+    border-radius: 8px;
+    background-color: #1a1a2e;
+    color: #e0e0f0;
+    font-size: 1em;
+}
+.wpaigen-modal-content input[type="email"]:focus {
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.4);
+}
+
+.wpaigen-form-section {
+    margin-bottom: 25px;
+}
+
+.wpaigen-modal-close {
+    color: #aaa;
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 35px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+.wpaigen-modal-close:hover,
+.wpaigen-modal-close:focus {
+    color: #64ffda;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Loading Overlay */
+.wpaigen-loading-overlay {
+    display: none;
+    position: fixed;
+    z-index: 99999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.wpaigen-loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.spinner-border {
+    width: 80px;
+    height: 80px;
+    border: 8px solid rgba(100, 255, 218, 0.2);
+    border-top-color: #64ffda;
+    border-radius: 50%;
+    animation: spin 1.5s linear infinite;
+    margin-bottom: 20px;
+}
+
+#wpaigen-loading-text {
+    color: #64ffda;
+    font-size: 1.8em;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+    animation: pulse 1.5s infinite alternate;
+}
+
+/* Keyframe Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.05); opacity: 0.9; }
+}
+
+/* --- Modal Success Payment Specific Styling --- */
+.wpaigen-modal-success .wpaigen-modal-content {
+    padding: 40px;
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.wpaigen-modal-success .success-title {
+    font-size: 2.2em;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #64ffda;
+    text-shadow: 0 0 10px rgba(100, 255, 218, 0.4);
+    line-height: 1.2;
+}
+
+.wpaigen-modal-success .success-message {
+    font-size: 1.2em;
+    line-height: 1.6;
+    color: #e0e0f0;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.wpaigen-modal-success .success-message .highlight {
+    color: #007bff;
+    font-weight: bold;
+}
+
+.wpaigen-modal-success #success-email-display {
+    color: #64ffda;
+    font-weight: bold;
+    word-break: break-all;
+    display: inline-block;
+}
+
+.wpaigen-modal-success .wpaigen-success-button {
+    margin-top: 20px;
+    width: auto;
+    padding: 12px 30px;
+    font-size: 1.2em;
+    display: inline-block;
+}

@@ -1,0 +1,18 @@
+# WordPress specific
+/wp-content/
+/wp-includes/
+/wp-admin/
+wp-config.php
+/.htaccess
+
+# Build files
+/node_modules/
+/vendor/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Log and temp files
+*.log
+temp/
