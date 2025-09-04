@@ -258,6 +258,7 @@ class WPaigen_Admin {
         check_ajax_referer( 'wpaigen_nonce', 'nonce' );
 
 		$email = '';
+        $domain = parse_url( home_url(), PHP_URL_HOST );
 		if ( isset( $_POST['email'] ) ) {
 			$email = sanitize_text_field( wp_unslash( $_POST['email'] ) );
 		}
@@ -266,7 +267,7 @@ class WPaigen_Admin {
             wp_send_json_error( array( 'message' => __( 'Please enter a valid email address.', 'wpaigen-ai-generator' ) ) );
         }
 
-        $response = $this->api_client->create_transaction( $email );
+        $response = $this->api_client->create_transaction( $email, $domain );
 
         if ( is_wp_error( $response ) ) {
             wp_send_json_error( array( 'message' => $response->get_error_message() ) );

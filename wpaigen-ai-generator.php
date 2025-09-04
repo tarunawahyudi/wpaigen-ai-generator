@@ -3,7 +3,7 @@
  * Plugin Name: WPaigen AI Generator
  * Plugin URI:  https://wpaigen.stacklab.id/
  * Description: Generate high-quality articles and SEO with AI, powered by WPaigen.
- * Version:     2.0.0
+ * Version:     2.1.0
  * Author:      Taruna Wahyudi
  * Author URI:  https://tarunawahyudi.github.io/
  * License:     GPL2

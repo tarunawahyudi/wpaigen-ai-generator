@@ -5,7 +5,7 @@ Tags: ai, content generator, article generator, seo, content creation
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 2.0.0
+Stable tag: 2.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -172,6 +172,9 @@ Primarily, the plugin generates articles and blog posts. Its capabilities will e
 ---
 
 == Upgrade Notice ==
+
+= 2.1.0 =
+Add domain field for create transaction pro license
 
 = 2.0.0 =
 This update introduces enhanced license management, ensuring one license per domain, and includes important security updates for Midtrans integration. Significant internal refactoring also improves plugin performance and stability. It is highly recommended to update to this version.
