@@ -33,13 +33,10 @@
         <h2><span class="dashicons dashicons-info"></span> Need Assistance?</h2>
         <p>Contact us for support or inquiries.</p>
         <div class="contact-info">
-          <p><span class="dashicons dashicons-admin-users"></span> <strong>Name:</strong> Taruna Wahyudi</p>
           <p><span class="dashicons dashicons-email"></span> <strong>Email:</strong> <a
-              href="mailto:wahyuditaruna97@gmail.com">wahyuditaruna97@gmail.com</a></p>
+              href="mailto:support@stacklab.id">support@stacklab.id</a></p>
           <p><span class="dashicons dashicons-admin-site"></span> <strong>Website:</strong> <a
-              href="https://tarunawahyudi.github.io" target="_blank">https://tarunawahyudi.github.io</a></p>
-          <p><span class="dashicons dashicons-whatsapp"></span> <strong>Telegram:</strong> <a
-              href="tg://resolve?phone=6287876220034">087876220034</a></p>
+              href="https://wpaigen.stacklab.id" target="_blank">https://wpaigen.stacklab.id</a></p>
         </div>
       </div>
     </div>
