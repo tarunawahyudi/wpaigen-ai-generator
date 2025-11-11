@@ -5,7 +5,7 @@ Tags: ai, content generator, article generator, seo, content creation
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.2.1
+Stable tag: 3.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,6 +20,7 @@ This plugin is designed for bloggers, content marketers, SEO specialists, and an
 **Key Features:**
 
 * **AI-Powered Article Generation:** Create unique, human-like articles from just a keyword.
+* **Google Trends Integration:** Discover trending keywords directly in your dashboard to create timely, relevant content that captures current search interest.
 * **SEO Optimization:** Automatically generate content that is optimized for search engines, helping you rank higher.
 * **Customizable Content:**
     * Control article length to suit your requirements.
@@ -29,6 +30,7 @@ This plugin is designed for bloggers, content marketers, SEO specialists, and an
 * **Intuitive Dashboard:** A clean, user-friendly interface to manage your content generation.
     * Monitor daily usage and limits.
     * Track your current plan (Free or Pro).
+    * Real-time trending keywords with traffic statistics.
     * Prominent display for Pro version features and offers.
 * **Seamless Pro Upgrade:** Easily upgrade to WPaigen Pro for unlimited access to all features. <-- Simplified "WPaigen AI Generator Pro" to "WPaigen Pro"
     * Secure payment processing integrated with Midtrans.
@@ -136,6 +138,15 @@ Primarily, the plugin generates articles and blog posts. Its capabilities will e
 
 == Changelog ==
 
+= 3.3.0 =
+* **Google Trends Keywords**
+    * Added trending keywords sidebar card in the article generation page
+    * Real-time keyword discovery with traffic statistics and article count
+    * Click-to-select functionality for quick keyword input
+    * Refresh button to get the latest trending topics
+    * Modern card-based UI with responsive design
+    * Supports license-based authentication for API access
+
 = 1.0.0 =
 * **Initial Release of WPaigen AI Generator.**
 * **Core AI Generation Functionality:**
@@ -172,6 +183,9 @@ Primarily, the plugin generates articles and blog posts. Its capabilities will e
 ---
 
 == Upgrade Notice ==
+
+= 3.3.0 =
+This update adds a powerful trending keywords sidebar in the article generation page. Discover what's currently trending, click any keyword to auto-fill the input, and create timely content that captures current search interest. No action required - the feature is automatically available!
 
 = 2.1.0 =
 Add domain field for create transaction pro license
