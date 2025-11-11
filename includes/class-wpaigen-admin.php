@@ -17,6 +17,7 @@ class WPaigen_Admin {
         add_action( 'wp_ajax_wpaigen_validate_license', array( $this, 'ajax_validate_license' ) );
         add_action( 'wp_ajax_wpaigen_generate_article', array( $this, 'ajax_generate_article' ) );
         add_action( 'wp_ajax_wpaigen_create_transaction', array( $this, 'ajax_create_transaction' ) );
+        add_action( 'wp_ajax_wpaigen_get_google_trends', array( $this, 'ajax_get_google_trends' ) );
 
         add_action( 'admin_init', array( $this, 'reset_daily_usage_if_needed' ) );
     }
@@ -281,6 +282,28 @@ class WPaigen_Admin {
             ) );
         } else {
             wp_send_json_error( array( 'message' => __( 'Failed to initiate transaction.', 'wpaigen-ai-generator' ) ) );
+        }
+    }
+
+    public function ajax_get_google_trends() {
+        check_ajax_referer( 'wpaigen_nonce', 'nonce' );
+
+        $license_key = get_option( 'wpaigen_license_key' );
+
+        if ( empty( $license_key ) ) {
+            wp_send_json_error( array( 'message' => __( 'No license key found. Please activate your license first.', 'wpaigen-ai-generator' ) ) );
+        }
+
+        $response = $this->api_client->get_google_trends( $license_key );
+
+        if ( is_wp_error( $response ) ) {
+            wp_send_json_error( array( 'message' => $response->get_error_message() ) );
+        }
+
+        if ( isset( $response['success'] ) && $response['success'] ) {
+            wp_send_json_success( array( 'trends' => $response['data'] ) );
+        } else {
+            wp_send_json_error( array( 'message' => __( 'Failed to fetch Google Trends data.', 'wpaigen-ai-generator' ) ) );
         }
     }
 }
