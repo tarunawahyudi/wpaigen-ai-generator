@@ -16,3 +16,6 @@ Thumbs.db
 # Log and temp files
 *.log
 temp/
+
+.idea/
+.vscode/

@@ -77,6 +77,22 @@
     </div>
 
     <div class="wpaigen-sidebar">
+      <div class="wpaigen-card wpaigen-trends-card">
+        <div class="wpaigen-trends-header">
+          <h2 class="wpaigen-trends-title">
+            <span class="dashicons dashicons-chart-line"></span>
+            Trending Keywords
+          </h2>
+          <button type="button" class="wpaigen-refresh-btn">
+            <span class="dashicons dashicons-update"></span>
+            Refresh
+          </button>
+        </div>
+        <div class="wpaigen-keywords-list">
+          <!-- Keywords will be loaded here via JavaScript -->
+        </div>
+      </div>
+
       <div class="wpaigen-card wpaigen-tips-card">
         <h2>Pro-Tips for Optimal Content</h2>
         <ul>

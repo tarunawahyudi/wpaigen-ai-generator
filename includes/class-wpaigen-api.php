@@ -93,4 +93,11 @@ class WPaigen_Api {
         );
         return $this->_send_request( 'api/transactions/create', 'POST', $body );
     }
+
+    public function get_google_trends( $license_key ) {
+        $headers = array(
+            'Authorization' => 'Bearer ' . $license_key,
+        );
+        return $this->_send_request( 'api/google-trends/trending', 'GET', null, $headers );
+    }
 }

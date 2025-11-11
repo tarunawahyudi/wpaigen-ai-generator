@@ -359,4 +359,124 @@ jQuery(document).ready(function($) {
             });
         });
     }
+
+    function initGoogleTrends() {
+        loadGoogleTrends();
+
+        $(document).on('click', '.wpaigen-refresh-btn', function() {
+            loadGoogleTrends();
+        });
+
+        $(document).on('click', '.wpaigen-keyword-item', function() {
+            const keywordText = $(this).find('.keyword-text').clone().children().remove().end().text().trim();
+            $('#wpaigen-keyword').val(keywordText).focus();
+            $('#wpaigen-keyword').addClass('highlight');
+            setTimeout(() => {
+                $('#wpaigen-keyword').removeClass('highlight');
+            }, 1000);
+        });
+    }
+
+    function loadGoogleTrends() {
+        const $trendsCard = $('.wpaigen-trends-card');
+        const $refreshBtn = $('.wpaigen-refresh-btn');
+        const $keywordsList = $('.wpaigen-keywords-list');
+
+        console.log('Loading Google Trends...', {
+            trendsCard: $trendsCard.length,
+            keywordsList: $keywordsList.length,
+            ajaxUrl: wpaigen_ajax_object?.ajax_url
+        });
+
+        if ($trendsCard.length === 0) {
+            console.log('Trends card not found');
+            return;
+        }
+
+        $refreshBtn.addClass('loading');
+        $keywordsList.html(`
+            <div class="wpaigen-trends-loading">
+                <div class="spinner"></div>
+                Loading trending keywords...
+            </div>
+        `);
+
+        $.ajax({
+            url: wpaigen_ajax_object.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'wpaigen_get_google_trends',
+                nonce: wpaigen_ajax_object.nonce
+            },
+            beforeSend: function() {
+                console.log('Sending AJAX request...', {
+                    action: 'wpaigen_get_google_trends',
+                    nonce: wpaigen_ajax_object.nonce ? 'exists' : 'missing'
+                });
+            },
+            success: function(response) {
+                console.log('AJAX response:', response);
+                if (response.success && response.data.trends) {
+                    renderTrendingKeywords(response.data.trends);
+                } else {
+                    showError('Failed to load trending keywords: ' + (response.data.message || 'Unknown error'));
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('AJAX error:', { xhr, status, error });
+                showError('Network error: Unable to fetch trending keywords');
+            },
+            complete: function() {
+                $refreshBtn.removeClass('loading');
+            }
+        });
+    }
+
+    function renderTrendingKeywords(trends) {
+        const $keywordsList = $('.wpaigen-keywords-list');
+
+        if (!trends || trends.length === 0) {
+            showError('No trending keywords available at the moment.');
+            return;
+        }
+
+        const keywordsHtml = trends.map(keyword => `
+            <div class="wpaigen-keyword-item">
+                <span class="keyword-text">
+                    <span class="trending-indicator"></span>
+                    ${keyword.title}
+                </span>
+                <div class="keyword-stats">
+                    <span class="wpaigen-keyword-traffic">${formatNumber(keyword.traffic)}</span>
+                    <span class="wpaigen-keyword-articles">• ${keyword.articleCount}</span>
+                </div>
+            </div>
+        `).join('');
+
+        $keywordsList.html(keywordsHtml);
+    }
+
+    function showError(message) {
+        const $keywordsList = $('.wpaigen-keywords-list');
+        $keywordsList.html(`
+            <div class="wpaigen-trends-error">
+                <span class="dashicons dashicons-warning"></span>
+                ${message}
+            </div>
+        `);
+    }
+
+    function formatNumber(num) {
+        const number = parseInt(num);
+        if (number >= 1000000) {
+            return (number / 1000000).toFixed(1) + 'M';
+        } else if (number >= 1000) {
+            return (number / 1000).toFixed(1) + 'K';
+        }
+        return number.toString();
+    }
+
+    if ($('#wpaigen-generate-form').length > 0) {
+        initGoogleTrends();
+    }
 });
