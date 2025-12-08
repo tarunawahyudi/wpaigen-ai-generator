@@ -60,6 +60,7 @@ class WPaigen {
         if ( is_admin() ) {
             new WPaigen_Admin();
         }
+        new WPaigen_Scheduler();
     }
 
     public function activate() {

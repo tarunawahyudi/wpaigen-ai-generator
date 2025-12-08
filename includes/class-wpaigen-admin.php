@@ -7,10 +7,12 @@ class WPaigen_Admin {
 
     private $api_client;
     private $post_manager;
+    private $scheduler;
 
     public function __construct() {
         $this->api_client   = new WPaigen_Api();
         $this->post_manager = new WPaigen_Post_Manager();
+        $this->scheduler    = new WPaigen_Scheduler();
 
         add_action( 'admin_menu', array( $this, 'add_plugin_menu' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
@@ -18,6 +20,9 @@ class WPaigen_Admin {
         add_action( 'wp_ajax_wpaigen_generate_article', array( $this, 'ajax_generate_article' ) );
         add_action( 'wp_ajax_wpaigen_create_transaction', array( $this, 'ajax_create_transaction' ) );
         add_action( 'wp_ajax_wpaigen_get_google_trends', array( $this, 'ajax_get_google_trends' ) );
+        add_action( 'wp_ajax_wpaigen_schedule_article', array( $this, 'ajax_schedule_article' ) );
+        add_action( 'wp_ajax_wpaigen_get_scheduled_posts', array( $this, 'ajax_get_scheduled_posts' ) );
+        add_action( 'wp_ajax_wpaigen_delete_schedule', array( $this, 'ajax_delete_schedule' ) );
 
         add_action( 'admin_init', array( $this, 'reset_daily_usage_if_needed' ) );
     }
@@ -59,6 +64,15 @@ class WPaigen_Admin {
             'wpaigen-license',
             array( $this, 'display_license_page' )
         );
+
+        add_submenu_page(
+            'wpaigen',
+            __( 'Scheduled Articles', 'wpaigen-ai-generator' ),
+            __( 'Scheduled Articles', 'wpaigen-ai-generator' ),
+            'manage_options',
+            'wpaigen-schedule',
+            array( $this, 'display_schedule_page' )
+        );
     }
 
 
@@ -94,6 +108,7 @@ class WPaigen_Admin {
                 'midtrans_client_key' => WPAIGEN_MIDTRANS_CLIENT_KEY,
                 'current_license_key' => get_option('wpaigen_license_key', ''),
                 'base_api_url'        => WPAIGEN_BASE_API_URL,
+                'admin_url'           => admin_url(),
             )
         );
 
@@ -305,5 +320,150 @@ class WPaigen_Admin {
         } else {
             wp_send_json_error( array( 'message' => __( 'Failed to fetch Google Trends data.', 'wpaigen-ai-generator' ) ) );
         }
+    }
+
+    public function ajax_schedule_article() {
+        check_ajax_referer( 'wpaigen_nonce', 'nonce' );
+
+        $license_key = get_option( 'wpaigen_license_key' );
+        $license_type = get_option( 'wpaigen_license_type', 'free' );
+        $usage_today = (int) get_option( 'wpaigen_usage_today', 0 );
+        $daily_limit = (int) get_option( 'wpaigen_daily_limit', 2 );
+
+        if ( empty( $license_key ) ) {
+            wp_send_json_error( array( 'message' => __( 'No license key found. Please activate your license.', 'wpaigen-ai-generator' ) ) );
+        }
+
+        if ( $license_type === 'free' && $usage_today >= $daily_limit ) {
+            wp_send_json_error( array( 'message' => __( 'You have reached your daily generation limit. Please upgrade to Pro for unlimited access.', 'wpaigen-ai-generator' ) ) );
+        }
+
+        // Validate form data
+        $keyword = '';
+        if ( isset( $_POST['keyword'] ) ) {
+            $keyword = sanitize_text_field( wp_unslash( $_POST['keyword'] ) );
+        }
+
+        $language = '';
+        if ( isset( $_POST['language'] ) ) {
+            $language = sanitize_text_field( wp_unslash( $_POST['language'] ) );
+        }
+
+        $length = 0;
+        if ( isset( $_POST['length'] ) && ! empty( $_POST['length'] ) ) {
+            $length = absint( wp_unslash( $_POST['length'] ) );
+        }
+
+        $tone = '';
+        if ( isset( $_POST['tone'] ) ) {
+            $tone = sanitize_text_field( wp_unslash( $_POST['tone'] ) );
+        }
+
+        $use_featured_image = isset( $_POST['use_featured_image'] ) && $_POST['use_featured_image'] === 'true';
+
+        $scheduled_date = '';
+        if ( isset( $_POST['scheduled_date'] ) ) {
+            $scheduled_date = sanitize_text_field( wp_unslash( $_POST['scheduled_date'] ) );
+        }
+
+        // Validate scheduled date
+        $scheduled_datetime = DateTime::createFromFormat( 'Y-m-d\TH:i', $scheduled_date );
+        if ( ! $scheduled_datetime || $scheduled_datetime <= new DateTime() ) {
+            wp_send_json_error( array( 'message' => __( 'Please select a valid future date and time.', 'wpaigen-ai-generator' ) ) );
+        }
+
+        // Apply license restrictions
+        if ( $license_type === 'free' ) {
+            if ( $length > 200 ) {
+                wp_send_json_error( array( 'message' => __( 'Free version is limited to 200 words.', 'wpaigen-ai-generator' ) ) );
+            }
+            if ( ! in_array( $language, array( 'indonesian', 'english' ) ) ) {
+                wp_send_json_error( array( 'message' => __( 'Free version supports only Indonesian and English.', 'wpaigen-ai-generator' ) ) );
+            }
+            if ( $tone !== 'professional' ) {
+                wp_send_json_error( array( 'message' => __( 'Free version supports only professional tone.', 'wpaigen-ai-generator' ) ) );
+            }
+        }
+
+        $schedule_data = array(
+            'keyword' => $keyword,
+            'language' => $language,
+            'length' => $length,
+            'tone' => $tone,
+            'use_featured_image' => $use_featured_image,
+            'scheduled_date' => $scheduled_datetime->format( 'Y-m-d H:i:s' )
+        );
+
+        $schedule_id = $this->scheduler->create_schedule( $schedule_data );
+
+        if ( is_wp_error( $schedule_id ) ) {
+            wp_send_json_error( array( 'message' => $schedule_id->get_error_message() ) );
+        }
+
+        // Update usage count
+        $new_usage_today = (int) get_option( 'wpaigen_usage_today', 0 ) + 1;
+        update_option( 'wpaigen_usage_today', $new_usage_today );
+        update_option( 'wpaigen_last_usage_date', gmdate( 'Y-m-d' ) );
+
+        wp_send_json_success( array(
+            'message' => __( 'Article scheduled successfully!', 'wpaigen-ai-generator' ),
+            'schedule_id' => $schedule_id,
+            'scheduled_date' => $scheduled_datetime->format( 'Y-m-d H:i:s' ),
+            'quota_remaining' => ( $license_type === 'free' ? ($daily_limit - $new_usage_today) : -1 ),
+            'usage_today' => $new_usage_today
+        ) );
+    }
+
+    public function ajax_get_scheduled_posts() {
+        check_ajax_referer( 'wpaigen_nonce', 'nonce' );
+
+        $status = isset( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : 'all';
+        $limit = isset( $_GET['limit'] ) ? absint( wp_unslash( $_GET['limit'] ) ) : 50;
+        $offset = isset( $_GET['offset'] ) ? absint( wp_unslash( $_GET['offset'] ) ) : 0;
+
+        $scheduled_posts = $this->scheduler->get_scheduled_posts( $status, $limit, $offset );
+        $total_count = $this->scheduler->get_scheduled_posts_count( $status );
+
+        wp_send_json_success( array(
+            'posts' => $scheduled_posts,
+            'total' => $total_count,
+            'status' => $status
+        ) );
+    }
+
+    public function ajax_delete_schedule() {
+        check_ajax_referer( 'wpaigen_nonce', 'nonce' );
+
+        $schedule_id = 0;
+        if ( isset( $_POST['schedule_id'] ) ) {
+            $schedule_id = absint( wp_unslash( $_POST['schedule_id'] ) );
+        }
+
+        if ( ! $schedule_id ) {
+            wp_send_json_error( array( 'message' => __( 'Invalid schedule ID.', 'wpaigen-ai-generator' ) ) );
+        }
+
+        $scheduled_post = $this->scheduler->get_scheduled_post( $schedule_id );
+        if ( ! $scheduled_post ) {
+            wp_send_json_error( array( 'message' => __( 'Schedule not found.', 'wpaigen-ai-generator' ) ) );
+        }
+
+        if ( $scheduled_post['status'] === 'processing' ) {
+            wp_send_json_error( array( 'message' => __( 'Cannot delete schedule that is currently being processed.', 'wpaigen-ai-generator' ) ) );
+        }
+
+        $result = $this->scheduler->update_schedule_status( $schedule_id, 'cancelled' );
+
+        if ( false === $result ) {
+            wp_send_json_error( array( 'message' => __( 'Failed to cancel schedule.', 'wpaigen-ai-generator' ) ) );
+        }
+
+        wp_send_json_success( array(
+            'message' => __( 'Schedule cancelled successfully!', 'wpaigen-ai-generator' )
+        ) );
+    }
+
+    public function display_schedule_page() {
+        include_once WPAIGEN_DIR . 'admin/views/wpaigen-schedule.php';
     }
 }

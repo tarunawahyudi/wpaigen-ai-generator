@@ -476,7 +476,339 @@ jQuery(document).ready(function($) {
         return number.toString();
     }
 
+    // --- Scheduling Functions ---
+    function initScheduling() {
+        // Schedule modal controls
+        $('#wpaigen-schedule-btn').on('click', showScheduleModal);
+        $('#wpaigen-close-schedule-modal, #wpaigen-cancel-schedule').on('click', hideScheduleModal);
+        $('#wpaigen-schedule-form').on('submit', handleScheduleSubmit);
+
+        // Set minimum datetime to current time
+        const now = new Date();
+        const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+            .toISOString()
+            .slice(0, 16);
+        $('#wpaigen-schedule-date').attr('min', localDateTime);
+    }
+
+    function showScheduleModal() {
+        const keyword = $('#wpaigen-keyword').val();
+        const language = $('#wpaigen-language option:selected').text();
+        const length = $('#wpaigen-length').val();
+        const tone = $('#wpaigen-tone option:selected').text();
+        const useFeaturedImage = $('#wpaigen-use-featured-image').is(':checked');
+
+        // Validate form first
+        if (!keyword) {
+            showMessage('#wpaigen-generate-message', 'Please enter a keyword first.', 'error');
+            return;
+        }
+
+        // Update preview
+        $('#preview-keyword').text(keyword);
+        $('#preview-language').text(language);
+        $('#preview-length').text(length + ' words');
+        $('#preview-tone').text(tone);
+        $('#preview-featured-image').text(useFeaturedImage ? 'Yes' : 'No');
+
+        // Show modal
+        $('#wpaigen-schedule-modal').css('display', 'flex');
+    }
+
+    function hideScheduleModal() {
+        $('#wpaigen-schedule-modal').css('display', 'none');
+        $('#wpaigen-schedule-form')[0].reset();
+        $('#wpaigen-schedule-message').removeClass('active');
+    }
+
+    function handleScheduleSubmit(e) {
+        e.preventDefault();
+
+        const formData = {
+            action: 'wpaigen_schedule_article',
+            nonce: wpaigen_ajax_object.nonce,
+            keyword: $('#wpaigen-keyword').val(),
+            language: $('#wpaigen-language').val(),
+            length: $('#wpaigen-length').val(),
+            tone: $('#wpaigen-tone').val(),
+            use_featured_image: $('#wpaigen-use-featured-image').is(':checked').toString(),
+            scheduled_date: $('#wpaigen-schedule-date').val()
+        };
+
+        showLoadingOverlay('Scheduling article...');
+
+        $.post(wpaigen_ajax_object.ajax_url, formData, function(response) {
+            hideLoadingOverlay();
+
+            if (response.success) {
+                showMessage('#wpaigen-schedule-message', response.data.message, 'success');
+
+                // Update usage stats
+                wpaigen_ajax_object.usage_today = response.data.usage_today;
+                updateDashboardStats();
+
+                // Hide modal after success
+                setTimeout(() => {
+                    hideScheduleModal();
+                }, 2000);
+            } else {
+                showMessage('#wpaigen-schedule-message', response.data.message, 'error');
+            }
+        }).fail(function() {
+            hideLoadingOverlay();
+            showMessage('#wpaigen-schedule-message', 'An error occurred. Please try again.', 'error');
+        });
+    }
+
+    // --- Schedule Page Functions ---
+    function initSchedulePage() {
+        loadScheduledPosts();
+        updateStats();
+
+        // Filter change
+        $('#wpaigen-status-filter').on('change', loadScheduledPosts);
+
+        // Refresh button
+        $('#wpaigen-refresh-schedules').on('click', function() {
+            loadScheduledPosts();
+            updateStats();
+        });
+
+        // Load more button
+        $('#wpaigen-load-more').on('click', loadMoreScheduledPosts);
+
+        // Modal close
+        $('#wpaigen-close-schedule-modal').on('click', function() {
+            $('#wpaigen-schedule-modal').css('display', 'none');
+        });
+    }
+
+    let currentPage = 0;
+    let currentStatus = 'all';
+    let isLoading = false;
+
+    function loadScheduledPosts() {
+        currentStatus = $('#wpaigen-status-filter').val();
+        currentPage = 0;
+
+        showScheduleLoading(true);
+
+        const data = {
+            action: 'wpaigen_get_scheduled_posts',
+            nonce: wpaigen_ajax_object.nonce,
+            status: currentStatus,
+            limit: 50,
+            offset: 0
+        };
+
+        $.get(wpaigen_ajax_object.ajax_url, data, function(response) {
+            if (response.success) {
+                renderScheduledPosts(response.data.posts, response.data.total);
+                updateStats();
+            }
+        }).always(function() {
+            showScheduleLoading(false);
+        });
+    }
+
+    function loadMoreScheduledPosts() {
+        if (isLoading) return;
+
+        isLoading = true;
+        currentPage += 50;
+
+        const data = {
+            action: 'wpaigen_get_scheduled_posts',
+            nonce: wpaigen_ajax_object.nonce,
+            status: currentStatus,
+            limit: 50,
+            offset: currentPage
+        };
+
+        $('#wpaigen-load-more').text('Loading...');
+
+        $.get(wpaigen_ajax_object.ajax_url, data, function(response) {
+            if (response.success && response.data.posts.length > 0) {
+                appendScheduledPosts(response.data.posts);
+            } else {
+                $('#wpaigen-load-more').hide();
+            }
+        }).always(function() {
+            isLoading = false;
+            $('#wpaigen-load-more').text('Load More');
+        });
+    }
+
+    function renderScheduledPosts(posts, total) {
+        const $tbody = $('#wpaigen-schedule-tbody');
+
+        if (posts.length === 0) {
+            $tbody.html('<tr><td colspan="7" class="text-center">No scheduled articles found.</td></tr>');
+            $('#wpaigen-pagination').hide();
+            return;
+        }
+
+        let html = '';
+        posts.forEach(post => {
+            html += renderPostRow(post);
+        });
+
+        $tbody.html(html);
+
+        // Show load more button if there are more posts
+        if (total > posts.length) {
+            $('#wpaigen-pagination').show();
+        } else {
+            $('#wpaigen-pagination').hide();
+        }
+    }
+
+    function appendScheduledPosts(posts) {
+        const $tbody = $('#wpaigen-schedule-tbody');
+
+        posts.forEach(post => {
+            $tbody.append(renderPostRow(post));
+        });
+    }
+
+    function renderPostRow(post) {
+        const statusClass = getStatusClass(post.status);
+        const statusText = getStatusText(post.status);
+        const actions = getActionButtons(post);
+
+        return `
+            <tr>
+                <td>${escapeHtml(post.keyword)}</td>
+                <td>${capitalizeFirst(post.language)}</td>
+                <td>${post.length} words</td>
+                <td>${capitalizeFirst(post.tone)}</td>
+                <td>${formatDateTime(post.scheduled_date)}</td>
+                <td><span class="wpaigen-status ${statusClass}">${statusText}</span></td>
+                <td>${actions}</td>
+            </tr>
+        `;
+    }
+
+    function getStatusClass(status) {
+        const classes = {
+            'pending': 'status-pending',
+            'processing': 'status-processing',
+            'published': 'status-published',
+            'failed': 'status-failed',
+            'cancelled': 'status-cancelled'
+        };
+        return classes[status] || '';
+    }
+
+    function getStatusText(status) {
+        const texts = {
+            'pending': 'In Queue',
+            'processing': 'Processing',
+            'published': 'Published',
+            'failed': 'Failed',
+            'cancelled': 'Cancelled'
+        };
+        return texts[status] || status;
+    }
+
+    function getActionButtons(post) {
+        let actions = '';
+
+        if (post.status === 'published' && post.post_id) {
+            actions += `<a href="${wpaigen_ajax_object.admin_url}post.php?post=${post.post_id}&action=edit" class="button button-small">Edit</a> `;
+        }
+
+        if (post.status === 'pending' || post.status === 'failed') {
+            actions += `<button type="button" class="button button-small wpaigen-cancel-schedule" data-id="${post.id}">Cancel</button> `;
+        }
+
+        if (post.status === 'failed' && post.error_message) {
+            actions += `<button type="button" class="button button-small wpaigen-view-error" data-error="${escapeHtml(post.error_message)}">View Error</button> `;
+        }
+
+        return actions;
+    }
+
+    function updateStats() {
+        const statuses = ['pending', 'processing', 'published', 'failed'];
+
+        statuses.forEach(status => {
+            const data = {
+                action: 'wpaigen_get_scheduled_posts',
+                nonce: wpaigen_ajax_object.nonce,
+                status: status,
+                limit: 1,
+                offset: 0
+            };
+
+            $.get(wpaigen_ajax_object.ajax_url, data, function(response) {
+                if (response.success) {
+                    $(`#${status}-count`).text(response.data.total);
+                }
+            });
+        });
+    }
+
+    function showScheduleLoading(show) {
+        if (show) {
+            $('#wpaigen-schedule-loading').css('display', 'flex');
+        } else {
+            $('#wpaigen-schedule-loading').css('display', 'none');
+        }
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function capitalizeFirst(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function formatDateTime(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleString();
+    }
+
+    // --- Event Delegation for Schedule Page ---
+    $(document).on('click', '.wpaigen-cancel-schedule', function() {
+        const id = $(this).data('id');
+
+        if (!confirm('Are you sure you want to cancel this scheduled article?')) {
+            return;
+        }
+
+        const data = {
+            action: 'wpaigen_delete_schedule',
+            nonce: wpaigen_ajax_object.nonce,
+            schedule_id: id
+        };
+
+        $.post(wpaigen_ajax_object.ajax_url, data, function(response) {
+            if (response.success) {
+                alert(response.data.message);
+                loadScheduledPosts();
+                updateStats();
+            } else {
+                alert('Error: ' + response.data.message);
+            }
+        });
+    });
+
+    $(document).on('click', '.wpaigen-view-error', function() {
+        const error = $(this).data('error');
+        alert('Error: ' + error);
+    });
+
+    // --- Initialize based on current page ---
     if ($('#wpaigen-generate-form').length > 0) {
         initGoogleTrends();
+        initScheduling();
+    }
+
+    if ($('.wpaigen-schedule-page').length > 0) {
+        initSchedulePage();
     }
 });
