@@ -3,7 +3,7 @@
  * Plugin Name: WPaigen AI Generator
  * Plugin URI:  https://wpaigen.stacklab.id/
  * Description: Generate high-quality articles and SEO with AI, powered by WPaigen.
- * Version:     3.3.0
+ * Version:     3.4.0
  * Author:      Taruna Wahyudi
  * Author URI:  https://taruna.stacklab.id/
  * License:     GPL2
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'WPAIGEN_VERSION', '3.3.0' );
+define( 'WPAIGEN_VERSION', '3.4.0' );
 define( 'WPAIGEN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WPAIGEN_URL', plugin_dir_url( __FILE__ ) );
 define('WPAIGEN_PLUGIN_FILE', __FILE__);

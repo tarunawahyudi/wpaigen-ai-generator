@@ -5,7 +5,7 @@ Tags: ai, content generator, article generator, seo, content creation
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.3.0
+Stable tag: 3.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,6 +21,12 @@ This plugin is designed for bloggers, content marketers, SEO specialists, and an
 
 * **AI-Powered Article Generation:** Create unique, human-like articles from just a keyword.
 * **Google Trends Integration:** Discover trending keywords directly in your dashboard to create timely, relevant content that captures current search interest.
+* **Scheduled Articles (NEW):** Plan and automate your content strategy with advanced scheduling capabilities.
+    * Schedule articles for automatic publication at specific dates and times
+    * Real-time status tracking (Pending, Processing, Published, Failed, Cancelled)
+    * Optimized pagination with search and filtering for managing large numbers of scheduled posts
+    * Automated cron-based processing with fallback content generation
+    * Statistics dashboard showing scheduling status overview
 * **SEO Optimization:** Automatically generate content that is optimized for search engines, helping you rank higher.
 * **Customizable Content:**
     * Control article length to suit your requirements.
@@ -31,8 +37,9 @@ This plugin is designed for bloggers, content marketers, SEO specialists, and an
     * Monitor daily usage and limits.
     * Track your current plan (Free or Pro).
     * Real-time trending keywords with traffic statistics.
+    * Scheduled articles management with advanced filtering and pagination.
     * Prominent display for Pro version features and offers.
-* **Seamless Pro Upgrade:** Easily upgrade to WPaigen Pro for unlimited access to all features. <-- Simplified "WPaigen AI Generator Pro" to "WPaigen Pro"
+* **Seamless Pro Upgrade:** Easily upgrade to WPaigen Pro for unlimited access to all features.
     * Secure payment processing integrated with Midtrans.
 * **Free Version Available:** Start generating content immediately with our generous free plan.
 
@@ -138,6 +145,23 @@ Primarily, the plugin generates articles and blog posts. Its capabilities will e
 
 == Changelog ==
 
+= 3.4.0 =
+* **Scheduled Articles (Major New Feature)**
+    * Advanced content scheduling system for automated article publication
+    * Schedule articles for automatic generation and publication at specific dates and times
+    * Real-time status tracking with visual indicators (Pending, Processing, Published, Failed, Cancelled)
+    * Optimized pagination system with search and filtering for managing large numbers of scheduled posts
+    * Automated cron-based processing with intelligent fallback content generation
+    * Statistics dashboard showing comprehensive scheduling status overview
+    * Database optimization with new indexes for improved performance
+    * Caching system to reduce database load and improve response times
+    * Mobile-responsive interface with modern pagination controls
+    * Support for canceling scheduled articles and viewing error details
+    * Automatic timezone detection and browser-based scheduling
+    * Enhanced error handling and content validation with fallback mechanisms
+    * Search functionality to find scheduled articles by keyword or tone
+    * Configurable items per page (10, 20, 50, 100) for better user experience
+
 = 3.3.0 =
 * **Google Trends Keywords**
     * Added trending keywords sidebar card in the article generation page
@@ -183,6 +207,9 @@ Primarily, the plugin generates articles and blog posts. Its capabilities will e
 ---
 
 == Upgrade Notice ==
+
+= 3.4.0 =
+**Major Update: Scheduled Articles Feature!** This update introduces powerful content scheduling capabilities that allow you to plan and automate your content strategy. Schedule articles for automatic publication, track their status in real-time, and manage large numbers of scheduled posts with optimized pagination and search. The system includes automated processing, intelligent error handling, and a mobile-responsive interface. All scheduled articles are processed automatically every minute via WordPress cron, ensuring your content is published on time. The database has been optimized with new indexes for better performance, even with thousands of scheduled articles.
 
 = 3.3.0 =
 This update adds a powerful trending keywords sidebar in the article generation page. Discover what's currently trending, click any keyword to auto-fill the input, and create timely content that captures current search interest. No action required - the feature is automatically available!
