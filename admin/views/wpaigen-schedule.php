@@ -20,6 +20,19 @@
         <option value="cancelled">Cancelled</option>
       </select>
     </div>
+    <div class="wpaigen-filter-group">
+      <label for="wpaigen-search-input">Search:</label>
+      <input type="text" id="wpaigen-search-input" placeholder="Search keyword or tone..." />
+    </div>
+    <div class="wpaigen-filter-group">
+      <label for="wpaigen-per-page">Items per page:</label>
+      <select id="wpaigen-per-page">
+        <option value="10">10</option>
+        <option value="20" selected>20</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+    </div>
     <button type="button" id="wpaigen-refresh-schedules" class="button button-secondary">
       <span class="dashicons dashicons-update"></span> Refresh
     </button>
@@ -47,6 +60,13 @@
   </div>
 
   <div class="wpaigen-card">
+    <!-- Results Info -->
+    <div class="wpaigen-results-info">
+      <div class="results-count" id="wpaigen-results-count">
+        Showing <span id="wpaigen-showing-from">0</span> - <span id="wpaigen-showing-to">0</span> of <span id="wpaigen-total-items">0</span> items
+      </div>
+    </div>
+
     <div class="wpaigen-table-container">
       <table class="wp-list-table widefat fixed striped wpaigen-schedule-table">
         <thead>
@@ -68,10 +88,31 @@
       </table>
     </div>
 
-    <div class="wpaigen-pagination" id="wpaigen-pagination" style="display: none;">
-      <button type="button" class="button button-secondary" id="wpaigen-load-more">
-        Load More
-      </button>
+    <!-- Proper Pagination -->
+    <div class="wpaigen-pagination-wrapper" id="wpaigen-pagination-wrapper" style="display: none;">
+      <div class="wpaigen-pagination-controls">
+        <button type="button" class="button button-secondary" id="wpaigen-prev-page" disabled>
+          <span class="dashicons dashicons-arrow-left-alt2"></span> Previous
+        </button>
+
+        <div class="wpaigen-page-numbers" id="wpaigen-page-numbers">
+          <!-- Page numbers will be inserted here -->
+        </div>
+
+        <button type="button" class="button button-secondary" id="wpaigen-next-page" disabled>
+          Next <span class="dashicons dashicons-arrow-right-alt2"></span>
+        </button>
+      </div>
+
+      <div class="wpaigen-pagination-info">
+        Page <span id="wpaigen-current-page">1</span> of <span id="wpaigen-total-pages">1</span>
+      </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div class="wpaigen-pagination-loading" id="wpaigen-pagination-loading" style="display: none;">
+      <div class="spinner-border"></div>
+      <span>Loading...</span>
     </div>
   </div>
 

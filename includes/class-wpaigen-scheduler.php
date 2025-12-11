@@ -24,7 +24,13 @@ class WPaigen_Scheduler {
         global $wpdb;
 
         $current_version = get_option( 'wpaigen_scheduler_db_version', 0 );
-        $target_version = '1.0';
+        $target_version = '1.1';
+
+        // Add missing indexes for existing installations
+        if ( version_compare( $current_version, '1.1', '<' ) && version_compare( $current_version, '0', '>' ) ) {
+            // Table exists, need to add new indexes
+            $this->add_missing_indexes();
+        }
 
         if ( version_compare( $current_version, $target_version, '<' ) ) {
             $charset_collate = $wpdb->get_charset_collate();
@@ -44,7 +50,11 @@ class WPaigen_Scheduler {
                 error_message text NULL,
                 PRIMARY KEY (id),
                 KEY idx_status (status),
-                KEY idx_scheduled_date (scheduled_date)
+                KEY idx_scheduled_date (scheduled_date),
+                KEY idx_keyword (keyword),
+                KEY idx_tone (tone),
+                KEY idx_status_scheduled_date (status, scheduled_date),
+                KEY idx_created_at (created_at)
             ) $charset_collate;";
 
             require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
@@ -85,25 +95,73 @@ class WPaigen_Scheduler {
             return new WP_Error( 'db_error', 'Failed to create schedule' );
         }
 
+        // Clear stats cache
+        $this->clear_stats_cache();
+
         return $wpdb->insert_id;
     }
 
-    public function get_scheduled_posts( $status = 'all', $limit = 50, $offset = 0 ) {
+    public function get_scheduled_posts( $status = 'all', $limit = 20, $offset = 0, $search = '' ) {
         global $wpdb;
 
         $sql = "SELECT * FROM {$this->table_name}";
         $params = array();
+        $where_conditions = array();
 
         if ( $status !== 'all' ) {
-            $sql .= " WHERE status = %s";
+            $where_conditions[] = "status = %s";
             $params[] = $status;
         }
 
-        $sql .= " ORDER BY scheduled_date DESC LIMIT %d OFFSET %d";
+        if ( ! empty( $search ) ) {
+            $where_conditions[] = "(keyword LIKE %s OR tone LIKE %s)";
+            $search_term = '%' . $wpdb->esc_like( $search ) . '%';
+            $params[] = $search_term;
+            $params[] = $search_term;
+        }
+
+        if ( ! empty( $where_conditions ) ) {
+            $sql .= " WHERE " . implode( ' AND ', $where_conditions );
+        }
+
+        $sql .= " ORDER BY scheduled_date DESC, created_at DESC LIMIT %d OFFSET %d";
         $params[] = $limit;
         $params[] = $offset;
 
         return $wpdb->get_results( $wpdb->prepare( $sql, $params ), ARRAY_A );
+    }
+
+    public function get_scheduled_posts_pagination_info( $status = 'all', $limit = 20, $search = '' ) {
+        global $wpdb;
+
+        $sql = "SELECT COUNT(*) FROM {$this->table_name}";
+        $params = array();
+        $where_conditions = array();
+
+        if ( $status !== 'all' ) {
+            $where_conditions[] = "status = %s";
+            $params[] = $status;
+        }
+
+        if ( ! empty( $search ) ) {
+            $where_conditions[] = "(keyword LIKE %s OR tone LIKE %s)";
+            $search_term = '%' . $wpdb->esc_like( $search ) . '%';
+            $params[] = $search_term;
+            $params[] = $search_term;
+        }
+
+        if ( ! empty( $where_conditions ) ) {
+            $sql .= " WHERE " . implode( ' AND ', $where_conditions );
+        }
+
+        $total_items = $wpdb->get_var( $wpdb->prepare( $sql, $params ) );
+
+        return array(
+            'total_items' => intval( $total_items ),
+            'total_pages' => ceil( $total_items / $limit ),
+            'items_per_page' => $limit,
+            'current_page' => 1 // Will be updated in the calling function
+        );
     }
 
     public function get_scheduled_post( $id ) {
@@ -131,23 +189,37 @@ class WPaigen_Scheduler {
             $update_format[] = '%s';
         }
 
-        return $wpdb->update(
+        $result = $wpdb->update(
             $this->table_name,
             $update_data,
             array( 'id' => $id ),
             $update_format,
             array( '%d' )
         );
+
+        // Clear stats cache when status changes
+        if ( false !== $result && isset( $update_data['status'] ) ) {
+            $this->clear_stats_cache();
+        }
+
+        return $result;
     }
 
     public function delete_schedule( $id ) {
         global $wpdb;
 
-        return $wpdb->delete(
+        $result = $wpdb->delete(
             $this->table_name,
             array( 'id' => $id ),
             array( '%d' )
         );
+
+        // Clear stats cache
+        if ( false !== $result ) {
+            $this->clear_stats_cache();
+        }
+
+        return $result;
     }
 
     public function process_scheduled_posts() {
@@ -385,6 +457,48 @@ class WPaigen_Scheduler {
             ),
             'featured_image' => '',
         );
+    }
+
+    /**
+     * Clear stats cache
+     */
+    private function clear_stats_cache() {
+        global $wpdb;
+
+        // Get all cache keys that match our pattern and delete them
+        $cache_keys = $wpdb->get_col(
+            "SELECT option_name FROM {$wpdb->options}
+             WHERE option_name LIKE '_transient_wpaigen_schedule_stats_%'
+             OR option_name LIKE '_transient_timeout_wpaigen_schedule_stats_%'"
+        );
+
+        foreach ( $cache_keys as $cache_key ) {
+            $option_name = str_replace( '_transient_', '', str_replace( '_transient_timeout_', '', $cache_key ) );
+            delete_transient( $option_name );
+        }
+    }
+
+    /**
+     * Add missing indexes for existing installations
+     */
+    private function add_missing_indexes() {
+        global $wpdb;
+
+        $indexes_to_add = array(
+            'idx_keyword' => 'keyword',
+            'idx_tone' => 'tone',
+            'idx_status_scheduled_date' => 'status, scheduled_date',
+            'idx_created_at' => 'created_at'
+        );
+
+        foreach ( $indexes_to_add as $index_name => $columns ) {
+            // Check if index already exists
+            $existing_indexes = $wpdb->get_results( "SHOW INDEX FROM {$this->table_name} WHERE Key_name = '{$index_name}'", ARRAY_A );
+
+            if ( empty( $existing_indexes ) ) {
+                $wpdb->query( "ALTER TABLE {$this->table_name} ADD INDEX {$index_name} ({$columns})" );
+            }
+        }
     }
 
     public function cleanup() {

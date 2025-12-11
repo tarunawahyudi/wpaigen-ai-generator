@@ -1058,15 +1058,40 @@ select option[disabled] {
 .wpaigen-filter-group label {
     font-weight: 500;
     color: #a0a0ff;
+    white-space: nowrap;
+    font-size: 14px;
 }
 
-.wpaigen-filter-group select {
+.wpaigen-filter-group select,
+.wpaigen-filter-group input[type="text"] {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #fff !important;
     padding: 8px 12px;
     border-radius: 4px;
     min-width: 150px;
+    transition: all 0.3s ease;
+}
+
+.wpaigen-filter-group input[type="text"] {
+    min-width: 200px;
+}
+
+.wpaigen-filter-group input[type="text"]::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.wpaigen-filter-group select:hover,
+.wpaigen-filter-group input[type="text"]:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.wpaigen-filter-group select:focus,
+.wpaigen-filter-group input[type="text"]:focus {
+    outline: none;
+    border-color: #64ffda;
+    box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
 }
 
 .wpaigen-filter-group select option {
@@ -1344,6 +1369,106 @@ select option[disabled] {
     transform: translateY(-1px);
 }
 
+/* Enhanced Pagination */
+.wpaigen-results-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wpaigen-pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wpaigen-pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.wpaigen-page-numbers {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.wpaigen-page-number {
+    background: rgba(100, 255, 218, 0.1);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    color: #64ffda;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-weight: 500;
+    min-width: 36px;
+    text-align: center;
+}
+
+.wpaigen-page-number:hover {
+    background: rgba(100, 255, 218, 0.2);
+    border-color: rgba(100, 255, 218, 0.4);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.wpaigen-page-number.active {
+    background: #64ffda;
+    border-color: #64ffda;
+    color: #1a1a2e;
+    font-weight: 600;
+}
+
+.wpaigen-page-number.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.wpaigen-pagination-info {
+    color: #a0a0ff;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.wpaigen-pagination-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 15px;
+    color: #64ffda;
+    font-size: 14px;
+}
+
+.wpaigen-pagination-loading .spinner-border {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(100, 255, 218, 0.2);
+    border-top: 2px solid #64ffda;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* Text center utility */
 .text-center {
     text-align: center;
@@ -1354,10 +1479,56 @@ select option[disabled] {
     .wpaigen-filters {
         flex-direction: column;
         align-items: stretch;
+        gap: 10px;
     }
 
     .wpaigen-filter-group {
         justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .wpaigen-filter-group label {
+        flex-basis: 100%;
+        margin-bottom: 5px;
+    }
+
+    .wpaigen-filter-group select,
+    .wpaigen-filter-group input[type="text"] {
+        min-width: 100%;
+        flex: 1;
+    }
+
+    .wpaigen-results-info {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .wpaigen-pagination-wrapper {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .wpaigen-pagination-controls {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .wpaigen-page-numbers {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .wpaigen-page-number {
+        min-width: 32px;
+        padding: 4px 8px;
+        font-size: 13px;
+    }
+
+    .wpaigen-pagination-controls .button {
+        width: 100%;
+        justify-content: center;
     }
 
     .wpaigen-schedule-stats {

@@ -58,20 +58,20 @@ class WPaigen_Admin {
 
         add_submenu_page(
             'wpaigen',
-            __( 'License', 'wpaigen-ai-generator' ),
-            __( 'License', 'wpaigen-ai-generator' ),
-            'manage_options',
-            'wpaigen-license',
-            array( $this, 'display_license_page' )
-        );
-
-        add_submenu_page(
-            'wpaigen',
             __( 'Scheduled Articles', 'wpaigen-ai-generator' ),
             __( 'Scheduled Articles', 'wpaigen-ai-generator' ),
             'manage_options',
             'wpaigen-schedule',
             array( $this, 'display_schedule_page' )
+        );
+
+        add_submenu_page(
+            'wpaigen',
+            __( 'License', 'wpaigen-ai-generator' ),
+            __( 'License', 'wpaigen-ai-generator' ),
+            'manage_options',
+            'wpaigen-license',
+            array( $this, 'display_license_page' )
         );
     }
 
@@ -437,16 +437,44 @@ class WPaigen_Admin {
         check_ajax_referer( 'wpaigen_nonce', 'nonce' );
 
         $status = isset( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : 'all';
-        $limit = isset( $_GET['limit'] ) ? absint( wp_unslash( $_GET['limit'] ) ) : 50;
-        $offset = isset( $_GET['offset'] ) ? absint( wp_unslash( $_GET['offset'] ) ) : 0;
+        $limit = isset( $_GET['limit'] ) ? absint( wp_unslash( $_GET['limit'] ) ) : 20;
+        $page = isset( $_GET['page'] ) ? absint( wp_unslash( $_GET['page'] ) ) : 1;
+        $search = isset( $_GET['search'] ) ? sanitize_text_field( wp_unslash( $_GET['search'] ) ) : '';
 
-        $scheduled_posts = $this->scheduler->get_scheduled_posts( $status, $limit, $offset );
-        $total_count = $this->scheduler->get_scheduled_posts_count( $status );
+        // Ensure page is at least 1
+        $page = max( 1, $page );
+        $offset = ( $page - 1 ) * $limit;
+
+        $scheduled_posts = $this->scheduler->get_scheduled_posts( $status, $limit, $offset, $search );
+
+        // Get pagination info
+        $pagination_info = $this->scheduler->get_scheduled_posts_pagination_info( $status, $limit, $search );
+        $pagination_info['current_page'] = $page;
+
+        // Get cached stats or calculate new ones
+        $stats_cache_key = 'wpaigen_schedule_stats_' . md5( $status . $search );
+        $stats = get_transient( $stats_cache_key );
+
+        if ( false === $stats ) {
+            $stats = array(
+                'pending' => $this->scheduler->get_scheduled_posts_count( 'pending' ),
+                'processing' => $this->scheduler->get_scheduled_posts_count( 'processing' ),
+                'published' => $this->scheduler->get_scheduled_posts_count( 'published' ),
+                'failed' => $this->scheduler->get_scheduled_posts_count( 'failed' ),
+                'cancelled' => $this->scheduler->get_scheduled_posts_count( 'cancelled' ),
+                'total' => $this->scheduler->get_scheduled_posts_count( 'all' ),
+            );
+
+            // Cache stats for 5 minutes
+            set_transient( $stats_cache_key, $stats, 5 * MINUTE_IN_SECONDS );
+        }
 
         wp_send_json_success( array(
             'posts' => $scheduled_posts,
-            'total' => $total_count,
-            'status' => $status
+            'pagination' => $pagination_info,
+            'stats' => $stats,
+            'status' => $status,
+            'search' => $search
         ) );
     }
 

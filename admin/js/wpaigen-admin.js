@@ -606,19 +606,38 @@ jQuery(document).ready(function($) {
     // --- Schedule Page Functions ---
     function initSchedulePage() {
         loadScheduledPosts();
-        updateStats();
 
         // Filter change
         $('#wpaigen-status-filter').on('change', loadScheduledPosts);
 
+        // Search with debounce
+        let searchTimeout;
+        $('#wpaigen-search-input').on('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(loadScheduledPosts, 500);
+        });
+
+        // Per page change
+        $('#wpaigen-per-page').on('change', loadScheduledPosts);
+
         // Refresh button
         $('#wpaigen-refresh-schedules').on('click', function() {
             loadScheduledPosts();
-            updateStats();
         });
 
-        // Load more button
-        $('#wpaigen-load-more').on('click', loadMoreScheduledPosts);
+        // Pagination controls
+        $('#wpaigen-prev-page').on('click', function() {
+            if (currentPage > 1 && !isLoading) {
+                loadScheduledPosts(currentPage - 1);
+            }
+        });
+
+        $('#wpaigen-next-page').on('click', function() {
+            const totalPages = $('#wpaigen-total-pages').text();
+            if (currentPage < parseInt(totalPages) && !isLoading) {
+                loadScheduledPosts(currentPage + 1);
+            }
+        });
 
         // Modal close
         $('#wpaigen-close-schedule-modal').on('click', function() {
@@ -626,68 +645,49 @@ jQuery(document).ready(function($) {
         });
     }
 
-    let currentPage = 0;
+    let currentPage = 1;
     let currentStatus = 'all';
+    let currentSearch = '';
+    let currentLimit = 20;
     let isLoading = false;
 
-    function loadScheduledPosts() {
-        currentStatus = $('#wpaigen-status-filter').val();
-        currentPage = 0;
+    function loadScheduledPosts(page = 1) {
+        if (isLoading) return;
 
-        showScheduleLoading(true);
+        currentStatus = $('#wpaigen-status-filter').val();
+        currentSearch = $('#wpaigen-search-input').val().trim();
+        currentLimit = parseInt($('#wpaigen-per-page').val());
+        currentPage = page;
+
+        showPaginationLoading(true);
 
         const data = {
             action: 'wpaigen_get_scheduled_posts',
             nonce: wpaigen_ajax_object.nonce,
             status: currentStatus,
-            limit: 50,
-            offset: 0
+            search: currentSearch,
+            limit: currentLimit,
+            page: currentPage
         };
 
         $.get(wpaigen_ajax_object.ajax_url, data, function(response) {
             if (response.success) {
-                renderScheduledPosts(response.data.posts, response.data.total);
-                updateStats();
+                renderScheduledPosts(response.data.posts);
+                updatePaginationControls(response.data.pagination);
+                updateResultsInfo(response.data.pagination);
+                updateStatsDisplay(response.data.stats);
             }
         }).always(function() {
-            showScheduleLoading(false);
+            showPaginationLoading(false);
         });
     }
 
-    function loadMoreScheduledPosts() {
-        if (isLoading) return;
-
-        isLoading = true;
-        currentPage += 50;
-
-        const data = {
-            action: 'wpaigen_get_scheduled_posts',
-            nonce: wpaigen_ajax_object.nonce,
-            status: currentStatus,
-            limit: 50,
-            offset: currentPage
-        };
-
-        $('#wpaigen-load-more').text('Loading...');
-
-        $.get(wpaigen_ajax_object.ajax_url, data, function(response) {
-            if (response.success && response.data.posts.length > 0) {
-                appendScheduledPosts(response.data.posts);
-            } else {
-                $('#wpaigen-load-more').hide();
-            }
-        }).always(function() {
-            isLoading = false;
-            $('#wpaigen-load-more').text('Load More');
-        });
-    }
-
-    function renderScheduledPosts(posts, total) {
+    function renderScheduledPosts(posts) {
         const $tbody = $('#wpaigen-schedule-tbody');
 
         if (posts.length === 0) {
             $tbody.html('<tr><td colspan="7" class="text-center">No scheduled articles found.</td></tr>');
-            $('#wpaigen-pagination').hide();
+            $('#wpaigen-pagination-wrapper').hide();
             return;
         }
 
@@ -697,23 +697,103 @@ jQuery(document).ready(function($) {
         });
 
         $tbody.html(html);
+    }
 
-        // Show load more button if there are more posts
-        if (total > posts.length) {
-            $('#wpaigen-pagination').show();
+    function updatePaginationControls(pagination) {
+        const { current_page, total_pages, total_items } = pagination;
+
+        // Update pagination info
+        $('#wpaigen-current-page').text(current_page);
+        $('#wpaigen-total-pages').text(total_pages);
+
+        // Update prev/next buttons
+        $('#wpaigen-prev-page').prop('disabled', current_page <= 1);
+        $('#wpaigen-next-page').prop('disabled', current_page >= total_pages);
+
+        // Generate page numbers
+        generatePageNumbers(current_page, total_pages);
+
+        // Show/hide pagination
+        if (total_pages > 1) {
+            $('#wpaigen-pagination-wrapper').show();
         } else {
-            $('#wpaigen-pagination').hide();
+            $('#wpaigen-pagination-wrapper').hide();
         }
     }
 
-    function appendScheduledPosts(posts) {
-        const $tbody = $('#wpaigen-schedule-tbody');
+    function generatePageNumbers(currentPage, totalPages) {
+        const $pageNumbers = $('#wpaigen-page-numbers');
+        $pageNumbers.empty();
 
-        posts.forEach(post => {
-            $tbody.append(renderPostRow(post));
-        });
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+        // Adjust start page if we're near the end
+        if (endPage - startPage < maxVisiblePages - 1) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+
+        // First page and ellipsis
+        if (startPage > 1) {
+            $pageNumbers.append(createPageLink(1, 1));
+            if (startPage > 2) {
+                $pageNumbers.append('<span class="wpaigen-page-number disabled">...</span>');
+            }
+        }
+
+        // Page numbers
+        for (let i = startPage; i <= endPage; i++) {
+            $pageNumbers.append(createPageLink(i, currentPage));
+        }
+
+        // Last page and ellipsis
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                $pageNumbers.append('<span class="wpaigen-page-number disabled">...</span>');
+            }
+            $pageNumbers.append(createPageLink(totalPages, currentPage));
+        }
     }
 
+    function createPageLink(pageNum, currentPage) {
+        const $link = $(`<a href="#" class="wpaigen-page-number ${pageNum === currentPage ? 'active' : ''}">${pageNum}</a>`);
+        $link.on('click', function(e) {
+            e.preventDefault();
+            if (pageNum !== currentPage && !isLoading) {
+                loadScheduledPosts(pageNum);
+            }
+        });
+        return $link;
+    }
+
+    function updateResultsInfo(pagination) {
+        const { current_page, total_pages, total_items, items_per_page } = pagination;
+
+        const startItem = total_items === 0 ? 0 : (current_page - 1) * items_per_page + 1;
+        const endItem = Math.min(current_page * items_per_page, total_items);
+
+        $('#wpaigen-showing-from').text(startItem);
+        $('#wpaigen-showing-to').text(endItem);
+        $('#wpaigen-total-items').text(total_items);
+    }
+
+    function updateStatsDisplay(stats) {
+        $('#pending-count').text(stats.pending || 0);
+        $('#processing-count').text(stats.processing || 0);
+        $('#published-count').text(stats.published || 0);
+        $('#failed-count').text(stats.failed || 0);
+    }
+
+    function showPaginationLoading(show) {
+        if (show) {
+            $('#wpaigen-pagination-loading').show();
+        } else {
+            $('#wpaigen-pagination-loading').hide();
+        }
+    }
+
+  
     function renderPostRow(post) {
         const statusClass = getStatusClass(post.status);
         const statusText = getStatusText(post.status);
@@ -772,26 +852,7 @@ jQuery(document).ready(function($) {
         return actions;
     }
 
-    function updateStats() {
-        const statuses = ['pending', 'processing', 'published', 'failed'];
-
-        statuses.forEach(status => {
-            const data = {
-                action: 'wpaigen_get_scheduled_posts',
-                nonce: wpaigen_ajax_object.nonce,
-                status: status,
-                limit: 1,
-                offset: 0
-            };
-
-            $.get(wpaigen_ajax_object.ajax_url, data, function(response) {
-                if (response.success) {
-                    $(`#${status}-count`).text(response.data.total);
-                }
-            });
-        });
-    }
-
+    
     function showScheduleLoading(show) {
         if (show) {
             $('#wpaigen-schedule-loading').css('display', 'flex');
@@ -833,7 +894,6 @@ jQuery(document).ready(function($) {
             if (response.success) {
                 alert(response.data.message);
                 loadScheduledPosts();
-                updateStats();
             } else {
                 alert('Error: ' + response.data.message);
             }
