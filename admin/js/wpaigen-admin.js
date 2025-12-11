@@ -78,7 +78,7 @@ jQuery(document).ready(function($) {
             showMessage('#wpaigen-generate-message', 'You have reached your daily generation limit. Upgrade to Pro!', 'error');
         } else {
             $('#wpaigen-generate-btn').prop('disabled', false).text('Generate Article');
-            $('#wpaigen-generate-message').removeClass('active').css('height', '0'); // Clear any prior limit message
+            $('#wpaigen-generate-message').removeClass('active').css('wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwheight', '0'); // Clear any prior limit message
         }
     }
 
@@ -476,7 +476,442 @@ jQuery(document).ready(function($) {
         return number.toString();
     }
 
+    // --- Scheduling Functions ---
+    function initScheduling() {
+        // Schedule modal controls
+        $('#wpaigen-schedule-btn').on('click', showScheduleModal);
+        $('#wpaigen-close-schedule-modal, #wpaigen-cancel-schedule').on('click', hideScheduleModal);
+        $('#wpaigen-schedule-form').on('submit', handleScheduleSubmit);
+
+        // Set minimum datetime to current time
+        const now = new Date();
+        const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+            .toISOString()
+            .slice(0, 16);
+        $('#wpaigen-schedule-date').attr('min', localDateTime);
+    }
+
+    function showScheduleModal() {
+        const keyword = $('#wpaigen-keyword').val();
+        const language = $('#wpaigen-language option:selected').text();
+        const length = $('#wpaigen-length').val();
+        const tone = $('#wpaigen-tone option:selected').text();
+        const useFeaturedImage = $('#wpaigen-use-featured-image').is(':checked');
+
+        // Validate form first
+        if (!keyword) {
+            showMessage('#wpaigen-generate-message', 'Please enter a keyword first.', 'error');
+            return;
+        }
+
+        // Auto-detect browser timezone
+        detectBrowserTimezone();
+
+        // Update preview
+        $('#preview-keyword').text(keyword);
+        $('#preview-language').text(language);
+        $('#preview-length').text(length + ' words');
+        $('#preview-tone').text(tone);
+        $('#preview-featured-image').text(useFeaturedImage ? 'Yes' : 'No');
+
+        // Show modal
+        $('#wpaigen-schedule-modal').css('display', 'flex');
+    }
+
+    function hideScheduleModal() {
+        $('#wpaigen-schedule-modal').css('display', 'none');
+        $('#wpaigen-schedule-form')[0].reset();
+        $('#wpaigen-schedule-message').removeClass('active');
+    }
+
+    function detectBrowserTimezone() {
+        // Get browser timezone using Intl.DateTimeFormat
+        let browserTimezone = 'UTC';
+        try {
+            browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        } catch (e) {
+            // Silent fallback
+        }
+
+        // Update browser timezone display
+        $('#browser-timezone').text(browserTimezone || 'Unknown');
+
+        // Try to match detected timezone with available options
+        const $timezoneSelect = $('#wpaigen-schedule-timezone');
+        const $options = $timezoneSelect.find('option');
+
+        // Check for exact match first
+        let $matchedOption = $options.filter(function() {
+            return $(this).val() === browserTimezone;
+        });
+
+        // If no exact match, try to match by region
+        if ($matchedOption.length === 0) {
+            const region = browserTimezone.split('/')[0]; // e.g., 'Asia' from 'Asia/Jakarta'
+            $matchedOption = $options.filter(function() {
+                return $(this).val().startsWith(region + '/');
+            });
+        }
+
+        // Set the matched option if found, otherwise use browser timezone as fallback
+        if ($matchedOption.length > 0) {
+            $timezoneSelect.val($matchedOption.val());
+        } else {
+            // Add browser timezone as new option if it's not in the list
+            $timezoneSelect.append(`<option value="${browserTimezone}" selected>${browserTimezone}</option>`);
+            $timezoneSelect.val(browserTimezone);
+        }
+    }
+
+    function handleScheduleSubmit(e) {
+        e.preventDefault();
+
+        const formData = {
+            action: 'wpaigen_schedule_article',
+            nonce: wpaigen_ajax_object.nonce,
+            keyword: $('#wpaigen-keyword').val(),
+            language: $('#wpaigen-language').val(),
+            length: $('#wpaigen-length').val(),
+            tone: $('#wpaigen-tone').val(),
+            use_featured_image: $('#wpaigen-use-featured-image').is(':checked').toString(),
+            scheduled_date: $('#wpaigen-schedule-date').val(),
+            timezone: $('#wpaigen-schedule-timezone').val()
+        };
+
+        showLoadingOverlay('Scheduling article...');
+
+        $.post(wpaigen_ajax_object.ajax_url, formData, function(response) {
+            hideLoadingOverlay();
+
+            if (response.success) {
+                showMessage('#wpaigen-schedule-message', response.data.message, 'success');
+
+                // Update usage stats
+                wpaigen_ajax_object.usage_today = response.data.usage_today;
+                updateDashboardStats();
+
+                // Hide modal after success
+                setTimeout(() => {
+                    hideScheduleModal();
+                }, 2000);
+            } else {
+                showMessage('#wpaigen-schedule-message', response.data.message, 'error');
+            }
+        }).fail(function() {
+            hideLoadingOverlay();
+            showMessage('#wpaigen-schedule-message', 'An error occurred. Please try again.', 'error');
+        });
+    }
+
+    // --- Schedule Page Functions ---
+    function initSchedulePage() {
+        loadScheduledPosts();
+
+        // Filter change
+        $('#wpaigen-status-filter').on('change', loadScheduledPosts);
+
+        // Search with debounce
+        let searchTimeout;
+        $('#wpaigen-search-input').on('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(loadScheduledPosts, 500);
+        });
+
+        // Per page change
+        $('#wpaigen-per-page').on('change', loadScheduledPosts);
+
+        // Refresh button
+        $('#wpaigen-refresh-schedules').on('click', function() {
+            loadScheduledPosts();
+        });
+
+        // Pagination controls
+        $('#wpaigen-prev-page').on('click', function() {
+            if (currentPage > 1 && !isLoading) {
+                loadScheduledPosts(currentPage - 1);
+            }
+        });
+
+        $('#wpaigen-next-page').on('click', function() {
+            const totalPages = $('#wpaigen-total-pages').text();
+            if (currentPage < parseInt(totalPages) && !isLoading) {
+                loadScheduledPosts(currentPage + 1);
+            }
+        });
+
+        // Modal close
+        $('#wpaigen-close-schedule-modal').on('click', function() {
+            $('#wpaigen-schedule-modal').css('display', 'none');
+        });
+    }
+
+    let currentPage = 1;
+    let currentStatus = 'all';
+    let currentSearch = '';
+    let currentLimit = 20;
+    let isLoading = false;
+
+    function loadScheduledPosts(page = 1) {
+        if (isLoading) return;
+
+        currentStatus = $('#wpaigen-status-filter').val();
+        currentSearch = $('#wpaigen-search-input').val().trim();
+        currentLimit = parseInt($('#wpaigen-per-page').val());
+        currentPage = page;
+
+        showPaginationLoading(true);
+
+        const data = {
+            action: 'wpaigen_get_scheduled_posts',
+            nonce: wpaigen_ajax_object.nonce,
+            status: currentStatus,
+            search: currentSearch,
+            limit: currentLimit,
+            page: currentPage
+        };
+
+        $.get(wpaigen_ajax_object.ajax_url, data, function(response) {
+            if (response.success) {
+                renderScheduledPosts(response.data.posts);
+                updatePaginationControls(response.data.pagination);
+                updateResultsInfo(response.data.pagination);
+                updateStatsDisplay(response.data.stats);
+            }
+        }).always(function() {
+            showPaginationLoading(false);
+        });
+    }
+
+    function renderScheduledPosts(posts) {
+        const $tbody = $('#wpaigen-schedule-tbody');
+
+        if (posts.length === 0) {
+            $tbody.html('<tr><td colspan="7" class="text-center">No scheduled articles found.</td></tr>');
+            $('#wpaigen-pagination-wrapper').hide();
+            return;
+        }
+
+        let html = '';
+        posts.forEach(post => {
+            html += renderPostRow(post);
+        });
+
+        $tbody.html(html);
+    }
+
+    function updatePaginationControls(pagination) {
+        const { current_page, total_pages, total_items } = pagination;
+
+        // Update pagination info
+        $('#wpaigen-current-page').text(current_page);
+        $('#wpaigen-total-pages').text(total_pages);
+
+        // Update prev/next buttons
+        $('#wpaigen-prev-page').prop('disabled', current_page <= 1);
+        $('#wpaigen-next-page').prop('disabled', current_page >= total_pages);
+
+        // Generate page numbers
+        generatePageNumbers(current_page, total_pages);
+
+        // Show/hide pagination
+        if (total_pages > 1) {
+            $('#wpaigen-pagination-wrapper').show();
+        } else {
+            $('#wpaigen-pagination-wrapper').hide();
+        }
+    }
+
+    function generatePageNumbers(currentPage, totalPages) {
+        const $pageNumbers = $('#wpaigen-page-numbers');
+        $pageNumbers.empty();
+
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+        // Adjust start page if we're near the end
+        if (endPage - startPage < maxVisiblePages - 1) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+
+        // First page and ellipsis
+        if (startPage > 1) {
+            $pageNumbers.append(createPageLink(1, 1));
+            if (startPage > 2) {
+                $pageNumbers.append('<span class="wpaigen-page-number disabled">...</span>');
+            }
+        }
+
+        // Page numbers
+        for (let i = startPage; i <= endPage; i++) {
+            $pageNumbers.append(createPageLink(i, currentPage));
+        }
+
+        // Last page and ellipsis
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                $pageNumbers.append('<span class="wpaigen-page-number disabled">...</span>');
+            }
+            $pageNumbers.append(createPageLink(totalPages, currentPage));
+        }
+    }
+
+    function createPageLink(pageNum, currentPage) {
+        const $link = $(`<a href="#" class="wpaigen-page-number ${pageNum === currentPage ? 'active' : ''}">${pageNum}</a>`);
+        $link.on('click', function(e) {
+            e.preventDefault();
+            if (pageNum !== currentPage && !isLoading) {
+                loadScheduledPosts(pageNum);
+            }
+        });
+        return $link;
+    }
+
+    function updateResultsInfo(pagination) {
+        const { current_page, total_pages, total_items, items_per_page } = pagination;
+
+        const startItem = total_items === 0 ? 0 : (current_page - 1) * items_per_page + 1;
+        const endItem = Math.min(current_page * items_per_page, total_items);
+
+        $('#wpaigen-showing-from').text(startItem);
+        $('#wpaigen-showing-to').text(endItem);
+        $('#wpaigen-total-items').text(total_items);
+    }
+
+    function updateStatsDisplay(stats) {
+        $('#pending-count').text(stats.pending || 0);
+        $('#processing-count').text(stats.processing || 0);
+        $('#published-count').text(stats.published || 0);
+        $('#failed-count').text(stats.failed || 0);
+    }
+
+    function showPaginationLoading(show) {
+        if (show) {
+            $('#wpaigen-pagination-loading').show();
+        } else {
+            $('#wpaigen-pagination-loading').hide();
+        }
+    }
+
+  
+    function renderPostRow(post) {
+        const statusClass = getStatusClass(post.status);
+        const statusText = getStatusText(post.status);
+        const actions = getActionButtons(post);
+
+        return `
+            <tr>
+                <td>${escapeHtml(post.keyword)}</td>
+                <td>${capitalizeFirst(post.language)}</td>
+                <td>${post.length} words</td>
+                <td>${capitalizeFirst(post.tone)}</td>
+                <td>${formatDateTime(post.scheduled_date)}</td>
+                <td><span class="wpaigen-status ${statusClass}">${statusText}</span></td>
+                <td>${actions}</td>
+            </tr>
+        `;
+    }
+
+    function getStatusClass(status) {
+        const classes = {
+            'pending': 'status-pending',
+            'processing': 'status-processing',
+            'published': 'status-published',
+            'failed': 'status-failed',
+            'cancelled': 'status-cancelled'
+        };
+        return classes[status] || '';
+    }
+
+    function getStatusText(status) {
+        const texts = {
+            'pending': 'In Queue',
+            'processing': 'Processing',
+            'published': 'Published',
+            'failed': 'Failed',
+            'cancelled': 'Cancelled'
+        };
+        return texts[status] || status;
+    }
+
+    function getActionButtons(post) {
+        let actions = '';
+
+        if (post.status === 'published' && post.post_id) {
+            actions += `<a href="${wpaigen_ajax_object.admin_url}post.php?post=${post.post_id}&action=edit" class="button button-small">Edit</a> `;
+        }
+
+        if (post.status === 'pending' || post.status === 'failed') {
+            actions += `<button type="button" class="button button-small wpaigen-cancel-schedule" data-id="${post.id}">Cancel</button> `;
+        }
+
+        if (post.status === 'failed' && post.error_message) {
+            actions += `<button type="button" class="button button-small wpaigen-view-error" data-error="${escapeHtml(post.error_message)}">View Error</button> `;
+        }
+
+        return actions;
+    }
+
+    
+    function showScheduleLoading(show) {
+        if (show) {
+            $('#wpaigen-schedule-loading').css('display', 'flex');
+        } else {
+            $('#wpaigen-schedule-loading').css('display', 'none');
+        }
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function capitalizeFirst(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function formatDateTime(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleString();
+    }
+
+    // --- Event Delegation for Schedule Page ---
+    $(document).on('click', '.wpaigen-cancel-schedule', function() {
+        const id = $(this).data('id');
+
+        if (!confirm('Are you sure you want to cancel this scheduled article?')) {
+            return;
+        }
+
+        const data = {
+            action: 'wpaigen_delete_schedule',
+            nonce: wpaigen_ajax_object.nonce,
+            schedule_id: id
+        };
+
+        $.post(wpaigen_ajax_object.ajax_url, data, function(response) {
+            if (response.success) {
+                alert(response.data.message);
+                loadScheduledPosts();
+            } else {
+                alert('Error: ' + response.data.message);
+            }
+        });
+    });
+
+    $(document).on('click', '.wpaigen-view-error', function() {
+        const error = $(this).data('error');
+        alert('Error: ' + error);
+    });
+
+    // --- Initialize based on current page ---
     if ($('#wpaigen-generate-form').length > 0) {
         initGoogleTrends();
+        initScheduling();
+    }
+
+    if ($('.wpaigen-schedule-page').length > 0) {
+        initSchedulePage();
     }
 });

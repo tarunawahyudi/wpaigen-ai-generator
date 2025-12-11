@@ -822,6 +822,19 @@ select option[disabled] {
     font-size: 1em;
     width: 1em;
     height: 1em;
+    vertical-align: middle;
+}
+
+.wpaigen-button .dashicons {
+    vertical-align: middle;
+    line-height: 1;
+    margin-right: 3px;
+}
+
+#wpaigen-refresh-schedules .dashicons, .dashicons-before:before {
+    vertical-align: middle;
+    line-height: 1;
+    margin-right: 3px;
 }
 
 .wpaigen-trends-loading {
@@ -1006,4 +1019,555 @@ select option[disabled] {
     0% { transform: scale(1); }
     50% { transform: scale(1.02); }
     100% { transform: scale(1); }
+}
+
+/* Schedule Page Styles */
+.wpaigen-schedule-page {
+    font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #2a2a4a 0%, #1a1a2e 100%);
+    color: #e0e0f0;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.wpaigen-schedule-page .wp-heading-inline {
+    color: #fff;
+    font-size: 2.2em;
+    margin-bottom: 25px;
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(100, 255, 255, 0.3);
+}
+
+/* Schedule Filters */
+.wpaigen-filters {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.wpaigen-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wpaigen-filter-group label {
+    font-weight: 500;
+    color: #a0a0ff;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.wpaigen-filter-group select,
+.wpaigen-filter-group input[type="text"] {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff !important;
+    padding: 8px 12px;
+    border-radius: 4px;
+    min-width: 150px;
+    transition: all 0.3s ease;
+}
+
+.wpaigen-filter-group input[type="text"] {
+    min-width: 200px;
+}
+
+.wpaigen-filter-group input[type="text"]::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.wpaigen-filter-group select:hover,
+.wpaigen-filter-group input[type="text"]:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.wpaigen-filter-group select:focus,
+.wpaigen-filter-group input[type="text"]:focus {
+    outline: none;
+    border-color: #64ffda;
+    box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.2);
+}
+
+.wpaigen-filter-group select option {
+    background: #2a2a4a;
+    color: #fff;
+}
+
+.wpaigen-filter-group select:focus {
+    background: rgba(100, 255, 218, 0.1);
+    border-color: rgba(100, 255, 218, 0.4);
+    outline: none;
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.2);
+}
+
+.wpaigen-filter-group .button {
+    background: rgba(100, 255, 218, 0.15);
+    border: 1px solid rgba(100, 255, 218, 0.3);
+    color: #64ffda;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.wpaigen-filter-group .button:hover {
+    background: rgba(100, 255, 218, 0.25);
+    border-color: rgba(100, 255, 218, 0.5);
+    color: #ffffff;
+}
+
+/* Fix text contrast in cells */
+.wpaigen-schedule-table td a {
+    color: #64ffda;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.wpaigen-schedule-table td a:hover {
+    color: #ffffff;
+}
+
+/* Schedule Stats */
+.wpaigen-schedule-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(100, 255, 218, 0.2);
+    border-color: rgba(100, 255, 218, 0.3);
+}
+
+.stat-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #a0a0ff;
+}
+
+.stat-number {
+    font-size: 2.2em;
+    font-weight: 700;
+    color: #64ffda;
+    display: block;
+}
+
+/* Schedule Table */
+.wpaigen-table-container {
+    background: rgba(26, 26, 46, 0.9);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.wpaigen-schedule-table {
+    margin: 0;
+    background: rgba(26, 26, 46, 0.9);
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.wpaigen-schedule-table thead th {
+    background: rgba(42, 42, 74, 0.95);
+    border-bottom: 2px solid #64ffda;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 15px;
+    text-align: left;
+    font-size: 0.95em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.wpaigen-schedule-table tbody td {
+    border-bottom: 1px solid rgba(100, 255, 218, 0.1);
+    padding: 15px;
+    color: #ffffff;
+    font-weight: 400;
+    background: rgba(26, 26, 46, 0.8);
+}
+
+.wpaigen-schedule-table tbody tr:nth-child(even) td {
+    background: rgba(42, 42, 74, 0.6);
+}
+
+
+.wpaigen-schedule-table tbody tr:last-child td {
+    border-bottom: 1px solid rgba(100, 255, 218, 0.2);
+}
+
+/* Override WordPress default table styling */
+.wp-list-table.wpaigen-schedule-table {
+    border: none;
+    border-spacing: 0;
+}
+
+.wp-list-table.wpaigen-schedule-table th,
+.wp-list-table.wpaigen-schedule-table td {
+    border-left: none;
+    border-right: none;
+}
+
+.wp-list-table.wpaigen-schedule-table .manage-column {
+    border-bottom: none;
+    color: #fff;
+}
+
+/* Status Badges */
+.wpaigen-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-pending {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.status-processing {
+    background: rgba(0, 123, 255, 0.15);
+    color: #007bff;
+    border: 1px solid rgba(0, 123, 255, 0.3);
+}
+
+.status-published {
+    background: rgba(40, 167, 69, 0.15);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.status-failed {
+    background: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.status-cancelled {
+    background: rgba(108, 117, 125, 0.15);
+    color: #6c757d;
+    border: 1px solid rgba(108, 117, 125, 0.3);
+}
+
+/* Form Actions for Generate Page */
+.wpaigen-form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.wpaigen-form-actions .button {
+    flex: 1;
+    justify-content: center;
+}
+
+/* Schedule Modal Specific */
+.wpaigen-schedule-modal-content {
+    max-width: 600px;
+    width: 90%;
+}
+
+.wpaigen-schedule-preview {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.preview-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.preview-item:last-child {
+    border-bottom: none;
+}
+
+.preview-item strong {
+    color: #a0a0ff;
+    font-weight: 500;
+}
+
+.preview-item span {
+    color: #e0e0f0;
+}
+
+/* Table Action Buttons */
+.wpaigen-schedule-table .button {
+    background: rgba(100, 255, 218, 0.15);
+    border: 1px solid rgba(100, 255, 218, 0.3);
+    color: #64ffda !important;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.wpaigen-schedule-table .button:hover {
+    background: rgba(100, 255, 218, 0.25);
+    border-color: rgba(100, 255, 218, 0.5);
+    color: #ffffff !important;
+    transform: translateY(-1px);
+}
+
+.wpaigen-schedule-table .button.button-small {
+    padding: 4px 8px;
+    font-size: 0.8em;
+}
+
+/* Pagination */
+.wpaigen-pagination {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.wpaigen-pagination .button {
+    background: rgba(100, 255, 218, 0.15);
+    border: 1px solid rgba(100, 255, 218, 0.3);
+    color: #64ffda !important;
+    padding: 10px 30px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.wpaigen-pagination .button:hover {
+    background: rgba(100, 255, 218, 0.25);
+    border-color: rgba(100, 255, 218, 0.5);
+    color: #ffffff !important;
+    transform: translateY(-1px);
+}
+
+/* Enhanced Pagination */
+.wpaigen-results-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wpaigen-pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wpaigen-pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.wpaigen-page-numbers {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.wpaigen-page-number {
+    background: rgba(100, 255, 218, 0.1);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    color: #64ffda;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-weight: 500;
+    min-width: 36px;
+    text-align: center;
+}
+
+.wpaigen-page-number:hover {
+    background: rgba(100, 255, 218, 0.2);
+    border-color: rgba(100, 255, 218, 0.4);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.wpaigen-page-number.active {
+    background: #64ffda;
+    border-color: #64ffda;
+    color: #1a1a2e;
+    font-weight: 600;
+}
+
+.wpaigen-page-number.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.wpaigen-pagination-info {
+    color: #a0a0ff;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.wpaigen-pagination-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 15px;
+    color: #64ffda;
+    font-size: 14px;
+}
+
+.wpaigen-pagination-loading .spinner-border {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(100, 255, 218, 0.2);
+    border-top: 2px solid #64ffda;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Text center utility */
+.text-center {
+    text-align: center;
+}
+
+/* Responsive adjustments for schedule page */
+@media (max-width: 768px) {
+    .wpaigen-filters {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .wpaigen-filter-group {
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .wpaigen-filter-group label {
+        flex-basis: 100%;
+        margin-bottom: 5px;
+    }
+
+    .wpaigen-filter-group select,
+    .wpaigen-filter-group input[type="text"] {
+        min-width: 100%;
+        flex: 1;
+    }
+
+    .wpaigen-results-info {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .wpaigen-pagination-wrapper {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .wpaigen-pagination-controls {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .wpaigen-page-numbers {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .wpaigen-page-number {
+        min-width: 32px;
+        padding: 4px 8px;
+        font-size: 13px;
+    }
+
+    .wpaigen-pagination-controls .button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .wpaigen-schedule-stats {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-number {
+        font-size: 1.8em;
+    }
+
+    .wpaigen-schedule-table {
+        font-size: 0.9em;
+    }
+
+    .wpaigen-schedule-table thead th,
+    .wpaigen-schedule-table tbody td {
+        padding: 10px;
+    }
+
+    .wpaigen-form-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .wpaigen-schedule-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .wpaigen-table-container {
+        overflow-x: auto;
+    }
+
+    .wpaigen-schedule-table {
+        min-width: 600px;
+    }
 }

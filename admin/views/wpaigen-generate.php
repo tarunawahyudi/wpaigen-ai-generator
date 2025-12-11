@@ -70,8 +70,13 @@
           <label for="wpaigen-use-featured-image">Include Featured Image</label>
         </div>
 
-        <button type="submit" id="wpaigen-generate-btn" class="button button-primary wpaigen-button">Generate
-          Article</button>
+        <div class="wpaigen-form-actions">
+          <button type="submit" id="wpaigen-generate-btn" class="button button-primary wpaigen-button">Generate
+            Article</button>
+          <button type="button" id="wpaigen-schedule-btn" class="button button-secondary wpaigen-button">
+            <span class="dashicons dashicons-clock"></span> Schedule
+          </button>
+        </div>
         <div id="wpaigen-generate-message" class="wpaigen-message"></div>
       </form>
     </div>
@@ -127,6 +132,71 @@
     <div class="wpaigen-loading-spinner">
       <div class="spinner-border"></div>
       <p id="wpaigen-loading-text">Generating Article...</p>
+    </div>
+  </div>
+
+  <!-- Schedule Modal -->
+  <div id="wpaigen-schedule-modal" class="wpaigen-modal" style="display: none;">
+    <div class="wpaigen-modal-content wpaigen-schedule-modal-content">
+      <div class="wpaigen-modal-header">
+        <h3>Schedule Article</h3>
+        <button type="button" class="wpaigen-modal-close" id="wpaigen-close-schedule-modal">
+          <span class="dashicons dashicons-no-alt"></span>
+        </button>
+      </div>
+      <div class="wpaigen-modal-body">
+        <form id="wpaigen-schedule-form">
+          <div class="wpaigen-form-group">
+            <label for="wpaigen-schedule-timezone">Timezone:</label>
+            <select id="wpaigen-schedule-timezone" name="timezone">
+              <option value="UTC">UTC (Universal Time)</option>
+              <option value="Asia/Jakarta">Asia/Jakarta (UTC+7)</option>
+              <option value="America/New_York">America/New_York (UTC-5)</option>
+              <option value="America/Los_Angeles">America/Los_Angeles (UTC-8)</option>
+              <option value="Europe/London">Europe/London (UTC+0)</option>
+              <option value="Europe/Paris">Europe/Paris (UTC+1)</option>
+              <option value="Australia/Sydney">Australia/Sydney (UTC+10)</option>
+              <option value="Asia/Singapore">Asia/Singapore (UTC+8)</option>
+              <option value="Asia/Tokyo">Asia/Tokyo (UTC+9)</option>
+              <option value="America/Chicago">America/Chicago (UTC-6)</option>
+            </select>
+            <small>Schedule times will use this timezone. Your browser timezone: <strong id="browser-timezone">Detecting...</strong></small>
+          </div>
+
+          <div class="wpaigen-form-group">
+            <label for="wpaigen-schedule-date">Schedule Date & Time:</label>
+            <input type="datetime-local" id="wpaigen-schedule-date" name="scheduled_date" required>
+            <p class="description">Select when this article should be published in your selected timezone.</p>
+          </div>
+
+          <div class="wpaigen-form-group">
+            <h4>Article Preview</h4>
+            <div class="wpaigen-schedule-preview">
+              <div class="preview-item">
+                <strong>Keyword:</strong> <span id="preview-keyword"></span>
+              </div>
+              <div class="preview-item">
+                <strong>Language:</strong> <span id="preview-language"></span>
+              </div>
+              <div class="preview-item">
+                <strong>Word Count:</strong> <span id="preview-length"></span>
+              </div>
+              <div class="preview-item">
+                <strong>Tone:</strong> <span id="preview-tone"></span>
+              </div>
+              <div class="preview-item">
+                <strong>Featured Image:</strong> <span id="preview-featured-image"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="wpaigen-form-actions">
+            <button type="button" class="button" id="wpaigen-cancel-schedule">Cancel</button>
+            <button type="submit" id="wpaigen-confirm-schedule" class="button button-primary">Schedule Article</button>
+          </div>
+        </form>
+        <div id="wpaigen-schedule-message" class="wpaigen-message"></div>
+      </div>
     </div>
   </div>
 
