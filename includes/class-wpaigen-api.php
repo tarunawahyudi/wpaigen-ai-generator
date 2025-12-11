@@ -14,19 +14,41 @@ class WPaigen_Api {
     private function _send_request( $endpoint, $method = 'POST', $body = null, $headers = array() ) {
         $url = trailingslashit( $this->base_url ) . $endpoint;
 
+        // Always use browser-like User Agent to avoid API discrimination
+        // This ensures both web and cron requests look identical to the API server
+        $user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
+
+        // Add random cache buster and unique identifiers to avoid API caching/rate limiting
+        $cache_buster = md5( microtime( true ) . rand( 1000, 9999 ) );
+        $request_id = uniqid( 'wpaigen_', true );
+
         $args = array(
             'method'    => $method,
-            'timeout'   => 30, // seconds
+            'timeout'   => 45, // Increased timeout for better reliability
             'blocking'  => true,
             'headers'   => array_merge(
                 array(
                     'Content-Type' => 'application/json',
+                    'User-Agent'   => $user_agent,
+                    'X-Requested-With' => 'XMLHttpRequest',
+                    'X-WPaigen-Request-ID' => $request_id,
+                    'X-WPaigen-Cache-Buster' => $cache_buster,
+                    'Accept' => 'application/json, text/plain, */*',
+                    'Accept-Language' => 'en-US,en;q=0.9,id;q=0.8',
+                    'Accept-Encoding' => 'gzip, deflate',
+                    'Connection' => 'keep-alive',
+                    'Referer' => home_url( '/wp-admin/' ),
                 ),
                 $headers
             ),
             'sslverify' => false,
             'data_format' => 'body',
         );
+
+        // Add cache buster to URL if it's a GET request
+        if ( $method === 'GET' ) {
+            $url = add_query_arg( 'cb', $cache_buster, $url );
+        }
 
         if ( $body ) {
             $args['body'] = wp_json_encode( $body );

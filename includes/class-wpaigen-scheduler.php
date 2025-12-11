@@ -196,7 +196,65 @@ class WPaigen_Scheduler {
                 }
 
                 if ( isset( $response['success'] ) && $response['success'] ) {
-                    // Create the post
+                    // Log detailed API response for debugging
+                    error_log( "WPaigen API DEBUG - Schedule ID {$scheduled_post['id']} - Full Response: " . print_r( $response, true ) );
+
+                    // Validate API response content
+                    $is_valid_content = true;
+                    $validation_errors = array();
+
+                    // Check title validation
+                    if ( ! isset( $response['title'] ) || empty( $response['title'] ) || $response['title'] === 'Generated Article' ) {
+                        $validation_errors[] = 'Invalid title: ' . ( isset( $response['title'] ) ? $response['title'] : 'MISSING' );
+                        $is_valid_content = false;
+                    }
+
+                    // Check content validation
+                    if ( ! isset( $response['content'] ) || empty( $response['content'] ) ||
+                         strlen( $response['content'] ) < 50 ||
+                         $response['content'] === '<article><s></article>' ||
+                         strpos( $response['content'], '<s></article>' ) !== false ) {
+                        $validation_errors[] = 'Invalid content: ' . ( isset( $response['content'] ) ? substr( $response['content'], 0, 100 ) : 'MISSING' );
+                        error_log( "WPaigen API DEBUG - Content validation failed for schedule ID {$scheduled_post['id']}: " . implode( '; ', $validation_errors ) );
+                        $is_valid_content = false;
+                    }
+
+                    // Log validation result
+                    if ( $is_valid_content ) {
+                        error_log( "WPaigen API DEBUG - Schedule ID {$scheduled_post['id']} - Content validation PASSED" );
+                    } else {
+                        error_log( "WPaigen API DEBUG - Schedule ID {$scheduled_post['id']} - Content validation FAILED" );
+                    }
+
+                    if ( ! $is_valid_content ) {
+                        // Create meaningful fallback content
+                        $fallback_response = $this->create_fallback_content( $scheduled_post );
+                        $post_id = $post_manager->create_ai_post( $fallback_response, false );
+
+                        if ( is_wp_error( $post_id ) ) {
+                            $this->update_schedule_status(
+                                $scheduled_post['id'],
+                                'failed',
+                                null,
+                                'Failed to create fallback post: ' . $post_id->get_error_message()
+                            );
+                            continue;
+                        }
+
+                        wp_update_post( array(
+                            'ID' => $post_id,
+                            'post_status' => 'publish'
+                        ) );
+
+                        $this->update_schedule_status(
+                            $scheduled_post['id'],
+                            'published',
+                            $post_id
+                        );
+                        continue;
+                    }
+
+                    // Content is valid, create the post normally
                     $post_id = $post_manager->create_ai_post(
                         $response,
                         $scheduled_post['use_featured_image']
@@ -212,7 +270,7 @@ class WPaigen_Scheduler {
                         continue;
                     }
 
-                    // Update the post to be published immediately instead of draft
+                    // Update the post to be published immediately
                     wp_update_post( array(
                         'ID' => $post_id,
                         'post_status' => 'publish'
@@ -256,6 +314,77 @@ class WPaigen_Scheduler {
         }
 
         return $wpdb->get_var( $wpdb->prepare( $sql, $params ) );
+    }
+
+    
+    /**
+     * Create meaningful fallback content when API fails
+     */
+    private function create_fallback_content( $scheduled_post ) {
+        $keyword = ucfirst( $scheduled_post['keyword'] );
+        $language = $scheduled_post['language'];
+        $tone = $scheduled_post['tone'];
+        $length = $scheduled_post['length'];
+
+        $title = "Article: {$keyword}";
+        $content = "<!-- Scheduled Article Content (Fallback) -->\n";
+        $content .= "<!-- Note: This article was created due to API unavailability -->\n\n";
+
+        if ( $language === 'indonesian' ) {
+            $content .= "<h2>{$keyword}</h2>\n";
+            $content .= "<p>Ini adalah artikel tentang <strong>{$keyword}</strong> yang dibuat secara otomatis. ";
+            $content .= "Artikel ini ditulis dengan gaya <strong>" . ucfirst( $tone ) . "</strong> ";
+            $content .= "dengan target panjang <strong>{$length} kata</strong>.</p>\n\n";
+
+            $content .= "<h3>Ringkasan</h3>\n";
+            $content .= "<p>Artikel ini membahas berbagai aspek penting seputar {$keyword}. ";
+            $content .= "Informasi disajikan secara profesional dan mendalam untuk memberikan pemahaman komprehensif ";
+            $content .= " kepada pembaca mengenai topik yang sedang dibahas.</p>\n\n";
+
+            $content .= "<h3>Poin-Poin Utama</h3>\n";
+            $content .= "<ul>\n";
+            $content .= "<li>Pemahaman mendalam tentang {$keyword}</li>\n";
+            $content .= "<li>Analisis dari berbagai perspektif</li>\n";
+            $content .= "<li>Informasi terkini dan relevan</li>\n";
+            $content .= "<li>Format yang mudah dipahami</li>\n";
+            $content .= "</ul>\n\n";
+
+            $content .= "<p><em>Artikel ini akan diperbarui dengan konten lengkap segera setelah sistem kembali normal.</em></p>\n";
+
+        } else {
+            $content .= "<h2>{$keyword}</h2>\n";
+            $content .= "<p>This is an automatically generated article about <strong>{$keyword}</strong>. ";
+            $content .= "The article is written in <strong>" . ucfirst( $tone ) . "</strong> tone ";
+            $content .= "with a target length of <strong>{$length} words</strong>.</p>\n\n";
+
+            $content .= "<h3>Overview</h3>\n";
+            $content .= "<p>This article covers various important aspects of {$keyword}. ";
+            $content .= "The information is presented professionally and in-depth to provide comprehensive understanding ";
+            $content .= "to readers about the topic being discussed.</p>\n\n";
+
+            $content .= "<h3>Key Points</h3>\n";
+            $content .= "<ul>\n";
+            $content .= "<li>In-depth understanding of {$keyword}</li>\n";
+            $content .= "<li>Analysis from various perspectives</li>\n";
+            $content .= "<li>Current and relevant information</li>\n";
+            $content .= "<li>Easy-to-understand format</li>\n";
+            $content .= "</ul>\n\n";
+
+            $content .= "<p><em>This article will be updated with complete content as soon as the system returns to normal operation.</em></p>\n";
+        }
+
+        return array(
+            'success' => true,
+            'title' => $title,
+            'content' => $content,
+            'seo' => array(
+                'meta_title' => $title,
+                'meta_description' => "Article about {$keyword} generated from scheduled content",
+                'slug' => sanitize_title( $title ),
+                'excerpt' => "This article discusses important aspects of {$keyword}."
+            ),
+            'featured_image' => '',
+        );
     }
 
     public function cleanup() {

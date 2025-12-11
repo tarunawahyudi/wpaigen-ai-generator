@@ -23,7 +23,7 @@ class WPaigen_Admin {
         add_action( 'wp_ajax_wpaigen_schedule_article', array( $this, 'ajax_schedule_article' ) );
         add_action( 'wp_ajax_wpaigen_get_scheduled_posts', array( $this, 'ajax_get_scheduled_posts' ) );
         add_action( 'wp_ajax_wpaigen_delete_schedule', array( $this, 'ajax_delete_schedule' ) );
-
+        
         add_action( 'admin_init', array( $this, 'reset_daily_usage_if_needed' ) );
     }
 
@@ -366,11 +366,30 @@ class WPaigen_Admin {
             $scheduled_date = sanitize_text_field( wp_unslash( $_POST['scheduled_date'] ) );
         }
 
-        // Validate scheduled date
+        $timezone = 'Asia/Jakarta'; // Default
+        if ( isset( $_POST['timezone'] ) ) {
+            $timezone = sanitize_text_field( wp_unslash( $_POST['timezone'] ) );
+            // Save as plugin setting
+            update_option( 'wpaigen_timezone', $timezone );
+        }
+
+        // Validate scheduled date and store consistently
         $scheduled_datetime = DateTime::createFromFormat( 'Y-m-d\TH:i', $scheduled_date );
-        if ( ! $scheduled_datetime || $scheduled_datetime <= new DateTime() ) {
+        if ( ! $scheduled_datetime ) {
+            wp_send_json_error( array( 'message' => __( 'Invalid date format. Please select a valid date and time.', 'wpaigen-ai-generator' ) ) );
+        }
+
+        // Convert to timestamp and then to MySQL datetime format
+        $scheduled_timestamp = $scheduled_datetime->getTimestamp();
+        $current_local_timestamp = current_time( 'timestamp' );
+
+        // Validate that scheduled time is in the future
+        if ( $scheduled_timestamp <= $current_local_timestamp ) {
             wp_send_json_error( array( 'message' => __( 'Please select a valid future date and time.', 'wpaigen-ai-generator' ) ) );
         }
+
+        // Convert to MySQL datetime format
+        $scheduled_mysql_time = date( 'Y-m-d H:i:s', $scheduled_timestamp );
 
         // Apply license restrictions
         if ( $license_type === 'free' ) {
@@ -391,7 +410,7 @@ class WPaigen_Admin {
             'length' => $length,
             'tone' => $tone,
             'use_featured_image' => $use_featured_image,
-            'scheduled_date' => $scheduled_datetime->format( 'Y-m-d H:i:s' )
+            'scheduled_date' => $scheduled_mysql_time
         );
 
         $schedule_id = $this->scheduler->create_schedule( $schedule_data );
@@ -461,6 +480,229 @@ class WPaigen_Admin {
         wp_send_json_success( array(
             'message' => __( 'Schedule cancelled successfully!', 'wpaigen-ai-generator' )
         ) );
+    }
+
+    
+    public function ajax_test_cron() {
+        // Debug log
+        error_log( 'WPaigen: Test cron AJAX called' );
+
+        // Check nonce
+        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'wpaigen_nonce' ) ) {
+            error_log( 'WPaigen: Invalid nonce' );
+            wp_send_json_error( array( 'message' => 'Security check failed' ) );
+        }
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            error_log( 'WPaigen: Permission denied' );
+            wp_send_json_error( array( 'message' => 'Permission denied' ) );
+        }
+
+        try {
+            // Get debug info
+            $debug_info = $this->scheduler->debug_cron_status();
+
+            // Force process ALL pending posts regardless of scheduled time for debugging
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'wpaigen_scheduled_posts';
+
+            $pending_posts = $wpdb->get_results( $wpdb->prepare(
+                "SELECT * FROM {$table_name} WHERE status = %s LIMIT 5",
+                'pending'
+            ), ARRAY_A );
+
+            error_log( 'WPaigen: Found ' . count( $pending_posts ) . ' pending posts to force process' );
+
+            if ( ! empty( $pending_posts ) ) {
+                // Manually trigger the process
+                $this->scheduler->process_scheduled_posts();
+            } else {
+                error_log( 'WPaigen: No pending posts found to process' );
+            }
+
+            $response_data = array(
+                'message' => 'Cron test executed successfully',
+                'debug_info' => $debug_info,
+                'current_wp_time' => current_time( 'mysql' ),
+                'current_gmt_time' => gmdate( 'Y-m-d H:i:s' ),
+                'timezone' => get_option( 'timezone_string', 'UTC' ),
+                'pending_posts_found' => count( $pending_posts ),
+                'debug' => 'If you see this, AJAX is working!'
+            );
+
+            error_log( 'WPaigen: Test cron success' );
+            wp_send_json_success( $response_data );
+
+        } catch ( Exception $e ) {
+            error_log( 'WPaigen: Test cron error - ' . $e->getMessage() );
+            wp_send_json_error( array( 'message' => $e->getMessage() ) );
+        }
+    }
+
+    public function ajax_force_process() {
+        // Check nonce
+        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'wpaigen_nonce' ) ) {
+            wp_send_json_error( array( 'message' => 'Security check failed' ) );
+        }
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( array( 'message' => 'Permission denied' ) );
+        }
+
+        try {
+            error_log( 'WPaigen: Force process called' );
+
+            // Check if diagnostic mode is requested
+            $diagnostic_mode = isset( $_POST['diagnostic'] ) && $_POST['diagnostic'] === 'true';
+
+            // Force process ALL pending posts regardless of scheduled time
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'wpaigen_scheduled_posts';
+
+            $all_pending = $wpdb->get_results( $wpdb->prepare(
+                "SELECT * FROM {$table_name} WHERE status = %s LIMIT 10",
+                'pending'
+            ), ARRAY_A );
+
+            error_log( 'WPaigen: Force processing ' . count( $all_pending ) . ' pending posts (Diagnostic: ' . ( $diagnostic_mode ? 'Yes' : 'No' ) . ')' );
+
+            if ( empty( $all_pending ) ) {
+                wp_send_json_success( array(
+                    'message' => 'No pending posts found to process',
+                    'processed' => 0,
+                    'diagnostic_mode' => $diagnostic_mode
+                ) );
+            }
+
+            $processed = 0;
+            $api_client = new WPaigen_Api();
+            $post_manager = new WPaigen_Post_Manager();
+
+            foreach ( $all_pending as $post ) {
+                error_log( 'WPaigen: Force processing post ID ' . $post['id'] . ' - Keyword: ' . $post['keyword'] );
+
+                // Update to processing status
+                $wpdb->update(
+                    $table_name,
+                    array( 'status' => 'processing' ),
+                    array( 'id' => $post['id'] ),
+                    array( '%s' ),
+                    array( '%d' )
+                );
+
+                if ( $diagnostic_mode ) {
+                    // Diagnostic mode: Create dummy article without API call
+                    error_log( 'WPaigen: Diagnostic mode - creating dummy post for ID ' . $post['id'] );
+
+                    $dummy_response = array(
+                        'success' => true,
+                        'title' => 'Test Article: ' . $post['keyword'],
+                        'content' => 'This is a test article generated for diagnostic purposes. Original keyword: ' . $post['keyword'] . '. Language: ' . $post['language'] . '. Length: ' . $post['length'] . ' words. Tone: ' . $post['tone'] . '. Generated on: ' . date( 'Y-m-d H:i:s' ),
+                        'meta_title' => 'Test Article: ' . $post['keyword'],
+                        'meta_description' => 'Test article diagnostic for keyword: ' . $post['keyword']
+                    );
+
+                    $post_id = $post_manager->create_ai_post( $dummy_response, $post['use_featured_image'] );
+
+                    if ( is_wp_error( $post_id ) ) {
+                        error_log( 'WPaigen: Diagnostic mode - Failed to create post for schedule ' . $post['id'] . ': ' . $post_id->get_error_message() );
+                        $wpdb->update(
+                            $table_name,
+                            array( 'status' => 'failed', 'error_message' => 'Diagnostic mode failed: ' . $post_id->get_error_message() ),
+                            array( 'id' => $post['id'] ),
+                            array( '%s', '%s' ),
+                            array( '%d' )
+                        );
+                        continue;
+                    }
+
+                } else {
+                    // Normal mode: Call API
+                    $license_key = get_option( 'wpaigen_license_key' );
+                    error_log( 'WPaigen: Using license key for post ' . $post['id'] . ': ' . ( $license_key ? 'present' : 'missing' ) );
+
+                    // Validate license key
+                    if ( ! $license_key ) {
+                        error_log( 'WPaigen: No license key for post ' . $post['id'] );
+                        $wpdb->update(
+                            $table_name,
+                            array( 'status' => 'failed', 'error_message' => 'No license key configured' ),
+                            array( 'id' => $post['id'] ),
+                            array( '%s', '%s' ),
+                            array( '%d' )
+                        );
+                        continue;
+                    }
+
+                    $response = $api_client->generate_article(
+                        $license_key,
+                        $post['keyword'],
+                        $post['language'],
+                        $post['length'],
+                        $post['tone']
+                    );
+
+                    error_log( 'WPaigen: API response for post ' . $post['id'] . ': ' . print_r( $response, true ) );
+
+                    if ( is_wp_error( $response ) || ! isset( $response['success'] ) || ! $response['success'] ) {
+                        $error = is_wp_error( $response ) ? $response->get_error_message() : 'API call failed';
+                        error_log( 'WPaigen: Force process failed for post ' . $post['id'] . ': ' . $error );
+
+                        $wpdb->update(
+                            $table_name,
+                            array( 'status' => 'failed', 'error_message' => $error ),
+                            array( 'id' => $post['id'] ),
+                            array( '%s', '%s' ),
+                            array( '%d' )
+                        );
+                        continue;
+                    }
+
+                    // Create post
+                    $post_id = $post_manager->create_ai_post( $response, $post['use_featured_image'] );
+
+                    if ( is_wp_error( $post_id ) ) {
+                        error_log( 'WPaigen: Failed to create post for schedule ' . $post['id'] . ': ' . $post_id->get_error_message() );
+                        $wpdb->update(
+                            $table_name,
+                            array( 'status' => 'failed', 'error_message' => $post_id->get_error_message() ),
+                            array( 'id' => $post['id'] ),
+                            array( '%s', '%s' ),
+                            array( '%d' )
+                        );
+                        continue;
+                    }
+                }
+
+                // Publish post
+                wp_update_post( array(
+                    'ID' => $post_id,
+                    'post_status' => 'publish'
+                ) );
+
+                // Update status to published
+                $wpdb->update(
+                    $table_name,
+                    array( 'status' => 'published', 'post_id' => $post_id ),
+                    array( 'id' => $post['id'] ),
+                    array( '%s', '%d' ),
+                    array( '%d' )
+                );
+
+                $processed++;
+                error_log( 'WPaigen: Successfully processed post ID ' . $post['id'] . ' (Diagnostic: ' . ( $diagnostic_mode ? 'Yes' : 'No' ) . ')' );
+            }
+
+            wp_send_json_success( array(
+                'message' => "Force processing completed. Processed {$processed} posts." . ( $diagnostic_mode ? ' (Diagnostic Mode - bypassed API)' : '' ),
+                'processed' => $processed,
+                'diagnostic_mode' => $diagnostic_mode
+            ) );
+
+        } catch ( Exception $e ) {
+            error_log( 'WPaigen: Force process error - ' . $e->getMessage() );
+            wp_send_json_error( array( 'message' => $e->getMessage() ) );
+        }
     }
 
     public function display_schedule_page() {
