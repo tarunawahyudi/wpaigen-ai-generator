@@ -258,6 +258,29 @@
     text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
 }
 
+#wpaigen-pro-price .price-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+}
+
+#wpaigen-pro-price .price-main {
+    font-size: 1.6em;
+    font-weight: bold;
+    color: #64ffda;
+    text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+    line-height: 1.2;
+}
+
+#wpaigen-pro-price .price-suffix {
+    font-size: 14px;
+    color: #a0a0c0;
+    font-weight: normal;
+    line-height: 1.2;
+}
+
 .wpaigen-hidden {
     display: none !important;
 }

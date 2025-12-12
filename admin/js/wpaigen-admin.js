@@ -120,10 +120,8 @@ jQuery(document).ready(function($) {
 
     function updatePriceDisplay(priceData) {
         const { formatted_price, currency, product_name, country, fallback, message } = priceData;
-
-        // Update main dashboard price
-        const priceText = `${formatted_price} / Lifetime License`;
-        $('#wpaigen-pro-price').text(priceText);
+        const priceHtml = `<div class="price-container"><div class="price-main">${formatted_price}</div><div class="price-suffix">One-time Purchase</div></div>`;
+        $('#wpaigen-pro-price').html(priceHtml);
 
         // Update modal price
         $('#wpaigen-modal-price').text(formatted_price);
