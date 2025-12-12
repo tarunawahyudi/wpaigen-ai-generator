@@ -122,4 +122,147 @@ class WPaigen_Api {
         );
         return $this->_send_request( 'api/google-trends/trending', 'GET', null, $headers );
     }
+
+    /**
+     * Get product pricing by currency
+     *
+     * @param int $product_id Product ID
+     * @param string $currency Currency code (IDR, USD, etc.)
+     * @return array|WP_Error Product pricing data
+     */
+    public function get_product_price( $product_id, $currency ) {
+        $endpoint = "api/products/{$product_id}/price/{$currency}";
+        return $this->_send_request( $endpoint, 'GET' );
+    }
+
+    /**
+     * Get product by SKU
+     *
+     * @param string $sku Product SKU
+     * @return array|WP_Error Product data with prices
+     */
+    public function get_product_by_sku( $sku ) {
+        $endpoint = "api/products/sku/{$sku}";
+        return $this->_send_request( $endpoint, 'GET' );
+    }
+
+    /**
+     * Detect user country based on IP address
+     *
+     * @return string Country code (e.g., 'ID' for Indonesia)
+     */
+    public function detect_user_country() {
+        // Check for testing override only in development environment
+        $test_country = get_option( 'wpaigen_test_country', '' );
+        if ( ! empty( $test_country ) ) {
+            return $test_country;
+        }
+
+        // Get user's IP address
+        $ip = $this->get_user_ip();
+
+        if ( empty( $ip ) || $ip === '127.0.0.1' || $ip === '::1' ) {
+            // For localhost, try to get external IP first
+            $external_ip = $this->get_external_ip();
+            if ( $external_ip && $external_ip !== $ip ) {
+                $ip = $external_ip;
+            } else {
+                // For localhost without external IP, check for debugging override
+                if ( defined( 'WPAIGEN_TEST_COUNTRY' ) ) {
+                    return WPAIGEN_TEST_COUNTRY;
+                }
+                return 'ID';
+            }
+        }
+
+        // Use a free IP geolocation service
+        $url = "http://ip-api.com/json/{$ip}?fields=countryCode";
+
+        $args = array(
+            'timeout'   => 5,
+            'blocking'  => true,
+            'headers'   => array(
+                'User-Agent' => 'WPaigen/1.0'
+            ),
+            'sslverify' => false,
+        );
+
+        $response = wp_remote_get( $url, $args );
+
+        if ( is_wp_error( $response ) ) {
+            error_log( 'WPaigen: IP geolocation error - ' . $response->get_error_message() );
+            return 'ID'; // Default to Indonesia on error
+        }
+
+        $response_code = wp_remote_retrieve_response_code( $response );
+        $response_body = wp_remote_retrieve_body( $response );
+        $data = json_decode( $response_body, true );
+
+        if ( $response_code === 200 && isset( $data['countryCode'] ) ) {
+            return $data['countryCode'];
+        }
+
+        return 'ID'; // Default to Indonesia
+    }
+
+    /**
+     * Get external IP address for localhost testing
+     *
+     * @return string|false External IP or false if unable to get
+     */
+    private function get_external_ip() {
+        $services = array(
+            'https://api.ipify.org',
+            'https://icanhazip.com',
+            'https://checkip.amazonaws.com'
+        );
+
+        foreach ( $services as $service ) {
+            $response = wp_remote_get( $service, array(
+                'timeout' => 3,
+                'headers' => array( 'User-Agent' => 'WPaigen/1.0' )
+            ));
+
+            if ( ! is_wp_error( $response ) && wp_remote_retrieve_response_code( $response ) === 200 ) {
+                $ip = trim( wp_remote_retrieve_body( $response ) );
+                if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) {
+                    return $ip;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get user's IP address
+     *
+     * @return string IP address
+     */
+    private function get_user_ip() {
+        if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+            return $_SERVER['HTTP_CLIENT_IP'];
+        } elseif ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+            $ips = explode( ',', $_SERVER['HTTP_X_FORWARDED_FOR'] );
+            return trim( $ips[0] );
+        } elseif ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) {
+            return $_SERVER['REMOTE_ADDR'];
+        }
+        return '';
+    }
+
+    /**
+     * Get currency based on user's country
+     *
+     * @param string $country_code Country code
+     * @return string Currency code
+     */
+    public function get_currency_by_country( $country_code ) {
+        $country_code = strtoupper( $country_code );
+        if ( $country_code === 'ID' ) {
+            return 'IDR';
+        }
+
+        return 'USD';
+    }
 }

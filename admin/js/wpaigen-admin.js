@@ -83,9 +83,91 @@ jQuery(document).ready(function($) {
     }
 
 
+    function loadProductPrice() {
+        $.ajax({
+            url: wpaigen_ajax_object.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'wpaigen_get_product_price',
+                nonce: wpaigen_ajax_object.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    updatePriceDisplay(response.data);
+                } else {
+                    // Fallback to hardcoded prices if API fails
+                    updatePriceDisplay({
+                        formatted_price: 'Rp 99.000',
+                        currency: 'IDR',
+                        product_name: 'WPaigen Pro',
+                        country: 'ID',
+                        fallback: true
+                    });
+                }
+            },
+            error: function() {
+                // Fallback to hardcoded prices on error
+                updatePriceDisplay({
+                    formatted_price: 'Rp 99.000',
+                    currency: 'IDR',
+                    product_name: 'WPaigen Pro',
+                    country: 'ID',
+                    fallback: true
+                });
+            }
+        });
+    }
+
+    function updatePriceDisplay(priceData) {
+        const { formatted_price, currency, product_name, country, fallback, message } = priceData;
+
+        // Update main dashboard price
+        const priceText = `${formatted_price} / Lifetime License`;
+        $('#wpaigen-pro-price').text(priceText);
+
+        // Update modal price
+        $('#wpaigen-modal-price').text(formatted_price);
+
+        // Update product title if different
+        if (product_name && product_name !== 'WPaigen Pro Lifetime License') {
+            $('.wpaigen-product-title').text(product_name);
+        }
+
+        // Add currency indicator for better UX
+        if (currency === 'USD') {
+            $('.wpaigen-price-note').text('One-time payment • Lifetime access • International pricing');
+        } else {
+            $('.wpaigen-price-note').text('One-time payment • Lifetime access');
+        }
+
+        // Add debugging info to console
+        if (fallback) {
+            console.log('WPaigen: Using fallback pricing due to API error', {
+                price: formatted_price,
+                currency: currency,
+                country: country,
+                message: message || 'No fallback message provided'
+            });
+        } else {
+            console.log('WPaigen: Dynamic price loaded successfully', {
+                price: formatted_price,
+                currency: currency,
+                country: country,
+                product_name: product_name
+            });
+        }
+
+        // Show a small indicator if we're using fallback pricing
+        if (fallback && country !== 'ID') {
+            const $priceElements = $('#wpaigen-pro-price, #wpaigen-modal-price');
+            $priceElements.attr('title', `Showing default pricing for ${country}. Contact support for local currency options.`);
+        }
+    }
+
     // --- Dashboard Page Logic ---
     if ($('.wpaigen-dashboard').length) {
         updateDashboardStats(); // Initial load
+        loadProductPrice(); // Load dynamic pricing
 
         // Payment Modal handlers
         const $emailModal = $('#wpaigen-email-modal');

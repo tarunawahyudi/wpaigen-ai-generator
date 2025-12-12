@@ -53,12 +53,11 @@
           <li><span class="dashicons dashicons-yes"></span> Advanced writing styles</li>
           <li><span class="dashicons dashicons-yes"></span> Auto SEO optimization</li>
           <li><span class="dashicons dashicons-yes"></span> Priority support</li>
-          <li><span class="dashicons dashicons-yes"></span> Scheduled publishing <span class="coming-soon">(Coming
-              Soon)</span></li>
+          <li><span class="dashicons dashicons-yes"></span> Scheduled publishing</li>
         </ul>
       </div>
       <div class="pro-cta">
-        <span class="pro-price">Rp. 50.000 / Lifetime License</span>
+        <span class="pro-price" id="wpaigen-pro-price">Loading...</span>
         <button id="wpaigen-btn-get-pro" class="button button-primary wpaigen-button">Get Pro License</button>
       </div>
     </div>
@@ -74,7 +73,7 @@
             </div>
 
             <div class="wpaigen-price-section">
-                <span class="wpaigen-price">Rp 50.000</span> <p class="wpaigen-price-note">One-time payment • Lifetime access</p> </div>
+                <span class="wpaigen-price" id="wpaigen-modal-price">Loading...</span> <p class="wpaigen-price-note">One-time payment • Lifetime access</p> </div>
 
             <div class="wpaigen-benefits-section">
                 <ul class="wpaigen-benefits-list">

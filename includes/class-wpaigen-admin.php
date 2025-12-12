@@ -23,7 +23,8 @@ class WPaigen_Admin {
         add_action( 'wp_ajax_wpaigen_schedule_article', array( $this, 'ajax_schedule_article' ) );
         add_action( 'wp_ajax_wpaigen_get_scheduled_posts', array( $this, 'ajax_get_scheduled_posts' ) );
         add_action( 'wp_ajax_wpaigen_delete_schedule', array( $this, 'ajax_delete_schedule' ) );
-        
+        add_action( 'wp_ajax_wpaigen_get_product_price', array( $this, 'ajax_get_product_price' ) );
+
         add_action( 'admin_init', array( $this, 'reset_daily_usage_if_needed' ) );
     }
 
@@ -730,6 +731,112 @@ class WPaigen_Admin {
         } catch ( Exception $e ) {
             error_log( 'WPaigen: Force process error - ' . $e->getMessage() );
             wp_send_json_error( array( 'message' => $e->getMessage() ) );
+        }
+    }
+
+    public function ajax_get_product_price() {
+        check_ajax_referer( 'wpaigen_nonce', 'nonce' );
+
+        // Default to Pro product with SKU 'WPAIGEN-PRO-LIFETIME'
+        $product_sku = 'WPAIGEN-001';
+
+        // Detect user country and get currency
+        $country = $this->api_client->detect_user_country();
+        $currency = $this->api_client->get_currency_by_country( $country );
+        $product_response = $this->api_client->get_product_by_sku( $product_sku );
+
+        if ( is_wp_error( $product_response ) ) {
+            // Fallback to hardcoded product ID 1 if SKU lookup fails
+            $product_id = 1;
+            $price_response = $this->api_client->get_product_price( $product_id, $currency );
+
+            if ( is_wp_error( $price_response ) ) {
+                // Final fallback - return updated default pricing
+                wp_send_json_success( array(
+                    'price' => $currency === 'IDR' ? 99000 : 6,
+                    'currency' => $currency,
+                    'formatted_price' => $currency === 'IDR' ? 'Rp 99.000' : '$6.00',
+                    'product_name' => 'WPaigen Pro',
+                    'country' => $country,
+                    'fallback' => true
+                ) );
+            } else {
+                $price = isset( $price_response['data']['price'] ) ? $price_response['data']['price'] : ($currency === 'IDR' ? 99000 : 6);
+                wp_send_json_success( array(
+                    'price' => $price,
+                    'currency' => $currency,
+                    'formatted_price' => $this->format_price( $price, $currency ),
+                    'product_name' => isset( $price_response['data']['productName'] ) ? $price_response['data']['productName'] : 'WPaigen Pro',
+                    'country' => $country,
+                    'fallback' => false
+                ) );
+            }
+        } else {
+            // Use SKU-based product lookup
+            $product_data = isset( $product_response['data'] ) ? $product_response['data'] : null;
+
+            if ( $product_data && isset( $product_data['prices'] ) && is_array( $product_data['prices'] ) ) {
+                // Find price for the user's currency
+                $target_price = null;
+                foreach ( $product_data['prices'] as $price_info ) {
+                    if ( $price_info['currency'] === $currency ) {
+                        $target_price = $price_info;
+                        break;
+                    }
+                }
+
+                if ( $target_price ) {
+                    // API returns prices in display format, no conversion needed
+                    $display_price = $target_price['price'];
+                    wp_send_json_success( array(
+                        'price' => $display_price,
+                        'currency' => $currency,
+                        'formatted_price' => $this->format_price( $display_price, $currency ),
+                        'product_name' => $product_data['name'],
+                        'country' => $country,
+                        'fallback' => false
+                    ) );
+                } else {
+                    // Currency not found, use updated fallback pricing
+                    wp_send_json_success( array(
+                        'price' => $currency === 'IDR' ? 99000 : 6,
+                        'currency' => $currency,
+                        'formatted_price' => $currency === 'IDR' ? 'Rp 99.000' : '$6.00',
+                        'product_name' => $product_data['name'],
+                        'country' => $country,
+                        'fallback' => true,
+                        'message' => 'Price for your currency not found, showing default pricing'
+                    ) );
+                }
+            } else {
+                // Product structure unexpected, use fallback
+                wp_send_json_success( array(
+                    'price' => $currency === 'IDR' ? 99000 : 6,
+                    'currency' => $currency,
+                    'formatted_price' => $currency === 'IDR' ? 'Rp 99.000' : '$6.00',
+                    'product_name' => isset( $product_data['name'] ) ? $product_data['name'] : 'WPaigen Pro',
+                    'country' => $country,
+                    'fallback' => true
+                ) );
+            }
+        }
+    }
+
+    /**
+     * Format price based on currency
+     *
+     * @param float $price Price amount
+     * @param string $currency Currency code
+     * @return string Formatted price
+     */
+    private function format_price( $price, $currency ) {
+        switch ( $currency ) {
+            case 'IDR':
+                return 'Rp ' . number_format( $price, 0, ',', '.' );
+            case 'USD':
+                return '$' . number_format( $price, 2, '.', ',' );
+            default:
+                return $currency . ' ' . number_format( $price, 2, '.', ',' );
         }
     }
 
