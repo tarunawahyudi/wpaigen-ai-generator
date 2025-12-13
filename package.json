@@ -1,0 +1,36 @@
+{
+  "name": "wpaigen-ai-generator",
+  "version": "4.0.0",
+  "description": "AI-powered WordPress plugin for generating high-quality, SEO-optimized articles",
+  "main": "prepare-svn-package.js",
+  "scripts": {
+    "prepare-svn": "node prepare-svn-package.js",
+    "version-check": "node -e \"const fs=require('fs');const pkg=require('./package.json');const phpFile=fs.readFileSync('wpaigen-ai-generator.php','utf8');const readmeFile=fs.readFileSync('readme.txt','utf8');console.log('Checking version consistency...');console.log('Package.json:', pkg.version);const phpMatch=phpFile.match(/Version:\\s*([\\d.]+)/);const readmeMatch=readmeFile.match(/Stable tag:\\s*([\\d.]+)/);console.log('PHP file:', phpMatch?phpMatch[1]:'not found');console.log('Readme.txt:', readmeMatch?readmeMatch[1]:'not found');\""
+  },
+  "keywords": [
+    "wordpress",
+    "plugin",
+    "ai",
+    "content-generator",
+    "seo",
+    "article-generator",
+    "artificial-intelligence"
+  ],
+  "author": {
+    "name": "Taruna Wahyudi",
+    "email": "wahyuditaruna97@gmail.com",
+    "url": "https://taruna.stacklab.id"
+  },
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://wpaigen.stacklab.id",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tarunawahyudi/wpaigen-ai-generator"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {},
+  "dependencies": {},
+  "private": true
+}
