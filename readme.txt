@@ -13,9 +13,15 @@ WPaigen AI Generator: AI-powered plugin for generating high-quality, SEO-optimiz
 
 == Description ==
 
+https://www.youtube.com/watch?v=dcKdp8MBY28
+
+= THE #1 AI-POWERED CONTENT GENERATION PLUGIN FOR WORDPRESS =
+
 WPaigen AI Generator is a powerful **WP plugin** that leverages advanced Artificial Intelligence to help you generate high-quality, SEO-optimized articles and content directly within your **WP dashboard**. Save countless hours on content creation, boost your productivity, and enhance your website's search engine rankings with ease.
 
 This plugin is designed for bloggers, content marketers, SEO specialists, and anyone who needs to produce engaging and relevant content efficiently. From generating full articles based on a single keyword to fine-tuning language and tone, WPaigen AI Generator puts the power of AI at your fingertips.
+
+Unlock all features with [WPaigen Pro](https://wpaigen.stacklab.id/).
 
 **Key Features:**
 
