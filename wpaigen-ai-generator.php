@@ -64,11 +64,21 @@ class WPaigen {
     }
 
     public function activate() {
-        add_option( 'wpaigen_license_key', '' );
-        add_option( 'wpaigen_license_type', 'free' );
-        add_option( 'wpaigen_usage_today', 0 );
-        add_option( 'wpaigen_daily_limit', 2 );
-        add_option( 'wpaigen_last_usage_date', gmdate( 'Y-m-d' ) );
+        if ( get_option( 'wpaigen_license_key' ) === false ) {
+            add_option( 'wpaigen_license_key', '' );
+        }
+        if ( get_option( 'wpaigen_license_type' ) === false ) {
+            add_option( 'wpaigen_license_type', 'free' );
+        }
+        if ( get_option( 'wpaigen_usage_today' ) === false ) {
+            add_option( 'wpaigen_usage_today', 0 );
+        }
+        if ( get_option( 'wpaigen_daily_limit' ) === false ) {
+            add_option( 'wpaigen_daily_limit', 2 );
+        }
+        if ( get_option( 'wpaigen_last_usage_date' ) === false ) {
+            add_option( 'wpaigen_last_usage_date', gmdate( 'Y-m-d' ) );
+        }
 
         $api_client = new WPaigen_Api();
         $current_license_key = get_option( 'wpaigen_license_key', '' );
@@ -90,10 +100,16 @@ class WPaigen {
         } else {
             $response = $api_client->validate_license( $current_license_key, $domain );
             if ( ! is_wp_error( $response ) && isset( $response['success'] ) && $response['success'] ) {
-                update_option( 'wpaigen_license_type', $response['type'] );
+                $new_type = $response['type'];
+                update_option( 'wpaigen_license_type', $new_type );
                 update_option( 'wpaigen_daily_limit', (int) $response['daily_limit'] );
+                error_log( "WPaigen: License validated successfully - Type: {$new_type}, Key: " . substr( $current_license_key, 0, 8 ) . "..." );
             } else {
-                update_option( 'wpaigen_license_type', 'free' );
+                $stored_type = get_option( 'wpaigen_license_type', 'free' );
+                error_log( "WPaigen: License validation failed - Stored: {$stored_type}, Key: " . substr( $current_license_key, 0, 8 ) . "..." );
+                if ( $stored_type !== 'pro' ) {
+                    update_option( 'wpaigen_license_type', 'free' );
+                }
             }
         }
     }
