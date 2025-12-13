@@ -58,7 +58,7 @@
       </div>
       <div class="pro-cta">
         <span class="pro-price" id="wpaigen-pro-price">Loading...</span>
-        <button id="wpaigen-btn-get-pro" class="button button-primary wpaigen-button">Get Pro License</button>
+        <button id="wpaigen-btn-get-pro" class="button button-primary wpaigen-button wpaigen-hidden">Get Pro License</button>
       </div>
     </div>
   </div>
@@ -89,14 +89,24 @@
                 <label for="wpaigen-email-input" class="wpaigen-label">Email Address</label>
                 <input type="email" id="wpaigen-email-input" placeholder="your.email@example.com" required>
                 <p class="wpaigen-email-helper-text">We'll send your license key to this email.</p>
-                <button id="wpaigen-email-submit" class="button button-primary wpaigen-button" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px;">
+
+                <div id="wpaigen-paypal-button-container" style="display: none; margin: 20px 0;">
+                    <div id="wpaigen-paypal-button" style="min-height: 45px;"></div>
+                    <div id="wpaigen-paypal-loading" style="display: none; text-align: center; padding: 20px; color: #64ffda;">
+                        <div class="spinner" style="width: 24px; height: 24px; border: 2px solid rgba(100, 255, 218, 0.3); border-top: 2px solid #64ffda; border-radius: 50%; margin: 0 auto 10px; animation: spin 1s linear infinite;"></div>
+                        Processing payment...
+                    </div>
+                </div>
+
+                <button id="wpaigen-midtrans-submit" class="button button-primary wpaigen-button" style="display: none; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; width: 100%;">
                     <span class="dashicons dashicons-privacy"></span> Proceed to Payment
                 </button>
+
                 <div id="wpaigen-modal-message" class="wpaigen-message"></div>
             </div>
 
             <div class="wpaigen-secure-payment-info">
-                <p class="wpaigen-secure-text">Secure payment powered by Midtrans. Your payment information is encrypted.</p>
+                <p class="wpaigen-secure-text" id="wpaigen-payment-info">Secure payment powered by <span id="payment-gateway-name">loading...</span>. Your payment information is encrypted.</p>
             </div>
         </div>
     </div>

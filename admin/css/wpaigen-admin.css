@@ -1589,3 +1589,8 @@ select option[disabled] {
         min-width: 600px;
     }
 }
+
+/* Button visibility during loading */
+.wpaigen-hidden {
+    display: none !important;
+}

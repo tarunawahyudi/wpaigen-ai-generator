@@ -62,7 +62,15 @@ class WPaigen_Api {
 
         $response_code = wp_remote_retrieve_response_code( $response );
         $response_body = wp_remote_retrieve_body( $response );
+
+        if ( empty( $response_body ) ) {
+            return new WP_Error( 'wpaigen_api_error_empty', 'Empty response from API' );
+        }
+
         $data = json_decode( $response_body, true );
+        if ( json_last_error() !== JSON_ERROR_NONE ) {
+            return new WP_Error( 'wpaigen_api_error_json', 'Invalid JSON response from API' );
+        }
 
         if ( $response_code >= 200 && $response_code < 300 ) {
             return $data;
@@ -112,8 +120,16 @@ class WPaigen_Api {
         $body = array(
             'email' => $email,
             'domain' => $domain,
+            'productSku' => 'WPAIGEN-001',
+            'currency' => 'IDR'
         );
-        return $this->_send_request( 'api/transactions/create', 'POST', $body );
+
+        $headers = array(
+            'Content-Type' => 'application/json',
+            'User-Agent' => 'WPaigenPlugin/1.0'
+        );
+
+        return $this->_send_request( 'api/transactions/create', 'POST', $body, $headers );
     }
 
     public function get_google_trends( $license_key ) {
@@ -264,5 +280,39 @@ class WPaigen_Api {
         }
 
         return 'USD';
+    }
+
+    /**
+     * Create PayPal order
+     *
+     * @param array $order_data Order data
+     * @param array $headers Request headers
+     * @return array|WP_Error API response
+     */
+    public function create_paypal_order( $order_data, $headers = array() ) {
+        $default_headers = array(
+            'Content-Type' => 'application/json',
+            'User-Agent' => 'WPaigenPlugin/1.0'
+        );
+        $headers = array_merge( $default_headers, $headers );
+
+        return $this->_send_request( 'api/transactions/paypal/create-order', 'POST', $order_data, $headers );
+    }
+
+    /**
+     * Capture PayPal payment
+     *
+     * @param array $capture_data Capture data
+     * @param array $headers Request headers
+     * @return array|WP_Error API response
+     */
+    public function capture_paypal_payment( $capture_data, $headers = array() ) {
+        $default_headers = array(
+            'Content-Type' => 'application/json',
+            'User-Agent' => 'WPaigenPlugin/1.0'
+        );
+        $headers = array_merge( $default_headers, $headers );
+
+        return $this->_send_request( 'api/transactions/paypal/capture-order', 'POST', $capture_data, $headers );
     }
 }

@@ -24,6 +24,8 @@ class WPaigen_Admin {
         add_action( 'wp_ajax_wpaigen_get_scheduled_posts', array( $this, 'ajax_get_scheduled_posts' ) );
         add_action( 'wp_ajax_wpaigen_delete_schedule', array( $this, 'ajax_delete_schedule' ) );
         add_action( 'wp_ajax_wpaigen_get_product_price', array( $this, 'ajax_get_product_price' ) );
+        add_action( 'wp_ajax_wpaigen_create_paypal_order', array( $this, 'ajax_create_paypal_order' ) );
+        add_action( 'wp_ajax_wpaigen_capture_paypal_payment', array( $this, 'ajax_capture_paypal_payment' ) );
 
         add_action( 'admin_init', array( $this, 'reset_daily_usage_if_needed' ) );
     }
@@ -110,6 +112,8 @@ class WPaigen_Admin {
                 'current_license_key' => get_option('wpaigen_license_key', ''),
                 'base_api_url'        => WPAIGEN_BASE_API_URL,
                 'admin_url'           => admin_url(),
+                'paypal_environment'  => WPAIGEN_PAYPAL_ENVIRONMENT,
+                'paypal_client_id'    => WPAIGEN_PAYPAL_CLIENT_ID,
             )
         );
 
@@ -287,17 +291,26 @@ class WPaigen_Admin {
         $response = $this->api_client->create_transaction( $email, $domain );
 
         if ( is_wp_error( $response ) ) {
-            wp_send_json_error( array( 'message' => $response->get_error_message() ) );
+            wp_send_json_error( array( 'message' => 'Failed to initiate transaction. Please try again.' ) );
         }
 
-        if ( isset( $response['success'] ) && $response['success'] ) {
+        // Response is already decoded from _send_request method
+        $response_data = $response;
+
+        if ( isset( $response_data['success'] ) && $response_data['success'] ) {
             wp_send_json_success( array(
-                'message'     => __( 'Transaction initiated.', 'wpaigen-ai-generator' ),
-                'token'       => $response['token'],
-                'redirect_url' => $response['redirect_url'],
+                'message'     => 'Transaction initiated successfully',
+                'token'       => $response_data['token'],
+                'redirect_url' => isset( $response_data['redirect_url'] ) ? $response_data['redirect_url'] : '',
             ) );
         } else {
-            wp_send_json_error( array( 'message' => __( 'Failed to initiate transaction.', 'wpaigen-ai-generator' ) ) );
+            $error_message = isset( $response_data['error'] ) ? $response_data['error'] : 'Failed to initiate transaction.';
+            $error_code = isset( $response_data['code'] ) ? $response_data['code'] : 'UNKNOWN_ERROR';
+
+            wp_send_json_error( array(
+                'message' => $error_message,
+                'code' => $error_code
+            ) );
         }
     }
 
@@ -837,6 +850,164 @@ class WPaigen_Admin {
                 return '$' . number_format( $price, 2, '.', ',' );
             default:
                 return $currency . ' ' . number_format( $price, 2, '.', ',' );
+        }
+    }
+
+    public function ajax_create_paypal_order() {
+        check_ajax_referer( 'wpaigen_nonce', 'nonce' );
+
+        $email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+        $domain = $this->get_site_domain();
+
+        if ( empty( $email ) || ! is_email( $email ) ) {
+            wp_send_json_error( array( 'message' => 'Please enter a valid email address.' ) );
+        }
+
+        $order_data = array(
+            'email' => $email,
+            'domain' => $domain,
+            'productSku' => 'WPAIGEN-001'
+        );
+
+        // Only add voucher_code if it's provided and not empty (for plugin compatibility)
+        if ( isset( $_POST['voucher_code'] ) && ! empty( $_POST['voucher_code'] ) ) {
+            $order_data['voucher_code'] = sanitize_text_field( wp_unslash( $_POST['voucher_code'] ) );
+        }
+
+        $headers = array(
+            'Content-Type' => 'application/json',
+            'User-Agent' => 'WPaigenPlugin/1.0'
+        );
+
+        $response = $this->api_client->create_paypal_order( $order_data, $headers );
+
+        if ( is_wp_error( $response ) ) {
+            wp_send_json_error( array( 'message' => $response->get_error_message() ) );
+        }
+
+        // Check if response is array (from API client) or WP_HTTP response object
+        if ( is_array( $response ) ) {
+            $response_data = $response;
+        } else {
+            $response_data = json_decode( wp_remote_retrieve_body( $response ), true );
+        }
+
+        if ( ! isset( $response_data['success'] ) || ! $response_data['success'] ) {
+            $error_message = isset( $response_data['error'] ) ? $response_data['error'] : 'Failed to create PayPal order';
+            wp_send_json_error( array( 'message' => $error_message ) );
+        }
+
+        wp_send_json_success( array(
+            'order_id' => $response_data['data']['id'],
+            'amount' => $response_data['data']['amount'],
+            'currency' => $response_data['data']['currency']
+        ) );
+    }
+
+    public function ajax_capture_paypal_payment() {
+        check_ajax_referer( 'wpaigen_nonce', 'nonce' );
+
+        $order_id = isset( $_POST['orderID'] ) ? sanitize_text_field( wp_unslash( $_POST['orderID'] ) ) : '';
+
+        if ( empty( $order_id ) ) {
+            wp_send_json_error( array( 'message' => 'Invalid PayPal order ID.' ) );
+        }
+
+        $capture_data = array(
+            'orderID' => $order_id
+        );
+
+        $headers = array(
+            'Content-Type' => 'application/json',
+            'User-Agent' => 'WPaigenPlugin/1.0'
+        );
+
+        $response = $this->api_client->capture_paypal_payment( $capture_data, $headers );
+
+        if ( is_wp_error( $response ) ) {
+            wp_send_json_error( array( 'message' => 'Failed to capture PayPal payment.' ) );
+        }
+
+        // Check if response is array (from API client) or WP_HTTP response object
+        if ( is_array( $response ) ) {
+            $response_data = $response;
+        } else {
+            $response_data = json_decode( wp_remote_retrieve_body( $response ), true );
+        }
+
+        if ( ! isset( $response_data['success'] ) || ! $response_data['success'] ) {
+            $error_message = isset( $response_data['error'] ) ? $response_data['error'] : 'Payment capture failed';
+            wp_send_json_error( array( 'message' => $error_message ) );
+        }
+
+        // Update user's license status after successful payment
+        if ( isset( $response_data['data']['licenseKey'] ) ) {
+            $this->update_license_after_payment( $response_data['data']['licenseKey'], $response_data['data']['email'] );
+        }
+
+        wp_send_json_success( array(
+            'success' => true,
+            'message' => 'Payment completed successfully!',
+            'license_key' => isset( $response_data['data']['licenseKey'] ) ? $response_data['data']['licenseKey'] : '',
+            'email' => isset( $response_data['data']['email'] ) ? $response_data['data']['email'] : ''
+        ) );
+    }
+
+    /**
+     * Get current site domain for payment processing
+     *
+     * @return string Site domain
+     */
+    private function get_site_domain() {
+        $domain = home_url();
+        $parsed_url = parse_url( $domain );
+
+        if ( isset( $parsed_url['host'] ) ) {
+            // Remove www prefix if present
+            $host = $parsed_url['host'];
+            if ( strpos( $host, 'www.' ) === 0 ) {
+                $host = substr( $host, 4 );
+            }
+
+            // For local development, use a valid domain format
+            if ( in_array( $host, array( 'localhost', '127.0.0.1' ) ) || strpos( $host, '.local' ) !== false || strpos( $host, '.test' ) !== false ) {
+                return 'example.com'; // Fallback domain for local development
+            }
+
+            return $host;
+        }
+
+        return 'example.com'; // Fallback domain for local development
+    }
+
+    /**
+     * Update user license after successful payment
+     *
+     * @param string $license_key
+     * @param string $email
+     * @return void
+     */
+    private function update_license_after_payment( $license_key, $email ) {
+        // Update WordPress options to reflect the new license
+        update_option( 'wpaigen_license_key', $license_key );
+        update_option( 'wpaigen_license_type', 'pro' );
+        update_option( 'wpaigen_license_email', $email );
+        update_option( 'wpaigen_license_status', 'active' );
+
+        // Reset usage counters for the day
+        update_option( 'wpaigen_usage_today', 0 );
+
+        // Update the global ajax object for immediate UI update
+        if ( isset( wp_scripts()->registered['wpaigen-admin'] ) ) {
+            $wpaigen_ajax_object = array(
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'nonce' => wp_create_nonce( 'wpaigen_nonce' ),
+                'usage_today' => 0,
+                'daily_limit' => -1,
+                'is_pro' => true,
+                'current_license_key' => $license_key
+            );
+            wp_localize_script( 'wpaigen-admin', 'wpaigen_ajax_object', $wpaigen_ajax_object );
         }
     }
 

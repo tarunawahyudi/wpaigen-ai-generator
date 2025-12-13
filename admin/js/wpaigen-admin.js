@@ -1,5 +1,4 @@
 jQuery(document).ready(function($) {
-    // --- Helper Functions ---
     function showMessage(selector, message, type) {
         const $messageDiv = $(selector);
         $messageDiv.removeClass('success error info active').addClass(type).text(message);
@@ -126,6 +125,9 @@ jQuery(document).ready(function($) {
         // Update modal price
         $('#wpaigen-modal-price').text(formatted_price);
 
+        // Show the Get Pro License button now that price is loaded
+        $('#wpaigen-btn-get-pro').removeClass('wpaigen-hidden');
+
         // Update product title if different
         if (product_name && product_name !== 'WPaigen Pro Lifetime License') {
             $('.wpaigen-product-title').text(product_name);
@@ -138,7 +140,15 @@ jQuery(document).ready(function($) {
             $('.wpaigen-price-note').text('One-time payment • Lifetime access');
         }
 
-        // Add debugging info to console
+        // Store payment gateway info globally for modal usage
+        window.wpaigen_payment_data = {
+            currency: currency,
+            country: country,
+            formatted_price: formatted_price,
+            paypal_ready: false
+        };
+
+        // Debugging info
         if (fallback) {
             console.log('WPaigen: Using fallback pricing due to API error', {
                 price: formatted_price,
@@ -162,7 +172,6 @@ jQuery(document).ready(function($) {
         }
     }
 
-    // --- Dashboard Page Logic ---
     if ($('.wpaigen-dashboard').length) {
         updateDashboardStats(); // Initial load
         loadProductPrice(); // Load dynamic pricing
@@ -175,7 +184,10 @@ jQuery(document).ready(function($) {
         const $modalMessage = $('#wpaigen-modal-message');
 
         $('#wpaigen-btn-get-pro').on('click', function() {
+            // Reset form and show appropriate payment options
+            $emailInput.val('');
             $emailModal.css('display', 'flex');
+            setupPaymentOptions();
         });
 
         $('.wpaigen-modal-close').on('click', function() {
@@ -197,14 +209,182 @@ jQuery(document).ready(function($) {
             }
         });
 
-        $emailSubmitBtn.on('click', function() {
+        // Setup payment options when modal opens
+        function setupPaymentOptions() {
+            const paymentData = window.wpaigen_payment_data || { currency: 'IDR', country: 'ID' };
+            const isInternational = paymentData.currency === 'USD' || paymentData.country !== 'ID';
+
+            if (isInternational) {
+                // Show PayPal for international users
+                $('#wpaigen-paypal-button-container').show();
+                $('#wpaigen-midtrans-submit').hide();
+                $('#payment-gateway-name').text('PayPal');
+                initPayPalButton();
+            } else {
+                // Show Midtrans for Indonesian users
+                $('#wpaigen-paypal-button-container').hide();
+                $('#wpaigen-midtrans-submit').show();
+                $('#payment-gateway-name').text('Midtrans');
+                $('#wpaigen-email-submit').prop('disabled', false).text('Proceed to Payment');
+            }
+
+            console.log('Payment options setup:', {
+                currency: paymentData.currency,
+                country: paymentData.country,
+                gateway: isInternational ? 'PayPal' : 'Midtrans'
+            });
+        }
+
+        // PayPal button initialization
+        function initPayPalButton() {
+            if (window.wpaigen_payment_data && window.wpaigen_payment_data.paypal_ready) {
+                return; // PayPal already loaded
+            }
+
+            // Load PayPal SDK
+            if (!document.getElementById('wpaigen-paypal-sdk')) {
+                const script = document.createElement('script');
+                script.id = 'wpaigen-paypal-sdk';
+                const paypalEnv = wpaigen_ajax_object.paypal_environment || 'sandbox';
+                const paypalClientId = wpaigen_ajax_object.paypal_client_id;
+                const paypalBaseUrl = paypalEnv === 'production' ? 'https://www.paypal.com' : 'https://www.sandbox.paypal.com';
+
+                script.src = `${paypalBaseUrl}/sdk/js?client-id=${paypalClientId}&currency=USD&intent=capture&disable-funding=credit,card`;
+                script.onload = function() {
+                    window.wpaigen_payment_data.paypal_ready = true;
+                    renderPayPalButton();
+                };
+                script.onerror = function() {
+                    console.error('Failed to load PayPal SDK');
+                    showMessage('#wpaigen-modal-message', 'PayPal is currently unavailable. Please try again later.', 'error');
+                };
+                document.head.appendChild(script);
+            } else {
+                renderPayPalButton();
+            }
+        }
+
+        // Render PayPal button
+        function renderPayPalButton() {
+            if (typeof paypal === 'undefined') {
+                console.error('PayPal SDK not loaded');
+                return;
+            }
+
+            paypal.Buttons({
+                style: {
+                    layout: 'horizontal',
+                    color: 'gold',
+                    shape: 'rect',
+                    label: 'pay',
+                    height: 48,
+                },
+                createOrder: function(data, actions) {
+                    const email = $emailInput.val();
+
+                    console.log('PayPal createOrder called with email:', email);
+
+                    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                        showMessage('#wpaigen-modal-message', 'Please enter a valid email address.', 'error');
+                        return Promise.reject('Invalid email');
+                    }
+
+                    $('#wpaigen-paypal-loading').show();
+                    $('#wpaigen-paypal-button').hide();
+
+                    console.log('Creating PayPal order...');
+                    return $.ajax({
+                        url: wpaigen_ajax_object.ajax_url,
+                        type: 'POST',
+                        data: {
+                            action: 'wpaigen_create_paypal_order',
+                            nonce: wpaigen_ajax_object.nonce,
+                            email: email
+                        },
+                        dataType: 'json'
+                    }).then(function(response) {
+                        console.log('PayPal order response:', response);
+                        if (response.success) {
+                            console.log('PayPal order created successfully:', response.data.order_id);
+                            return response.data.order_id;
+                        } else {
+                            console.error('PayPal order creation failed:', response.data);
+                            throw new Error(response.data.message || 'Failed to create PayPal order');
+                        }
+                    }).catch(function(error) {
+                        console.error('PayPal createOrder error:', error);
+                        $('#wpaigen-paypal-loading').hide();
+                        $('#wpaigen-paypal-button').show();
+                        showMessage('#wpaigen-modal-message', 'Failed to create PayPal order: ' + error.message, 'error');
+                        throw error;
+                    });
+                },
+                onApprove: function(data, actions) {
+                    $('#wpaigen-paypal-loading').show();
+                    $('#wpaigen-paypal-button').hide();
+
+                    return $.ajax({
+                        url: wpaigen_ajax_object.ajax_url,
+                        type: 'POST',
+                        data: {
+                            action: 'wpaigen_capture_paypal_payment',
+                            nonce: wpaigen_ajax_object.nonce,
+                            orderID: data.orderID
+                        },
+                        dataType: 'json'
+                    }).then(function(response) {
+                        $('#wpaigen-paypal-loading').hide();
+
+                        if (response.success) {
+                            // Close email modal and show success
+                            $emailModal.css('display', 'none');
+                            $('#success-email-display').text($emailInput.val());
+                            $successModal.css('display', 'flex');
+
+                            // Update UI state
+                            wpaigen_ajax_object.is_pro = true;
+                            wpaigen_ajax_object.daily_limit = -1;
+                            updateDashboardStats();
+
+                            console.log('PayPal payment successful:', response);
+                        } else {
+                            showMessage('#wpaigen-modal-message', response.data.message || 'Payment failed', 'error');
+                            $('#wpaigen-paypal-button').show();
+                        }
+                    }).catch(function(error) {
+                        $('#wpaigen-paypal-loading').hide();
+                        $('#wpaigen-paypal-button').show();
+                        console.error('PayPal capture error:', error);
+                        showMessage('#wpaigen-modal-message', 'Failed to capture payment. Please try again.', 'error');
+                    });
+                },
+                onError: function(err) {
+                    console.error('PayPal button error:', err);
+                    $('#wpaigen-paypal-loading').hide();
+                    $('#wpaigen-paypal-button').show();
+                    showMessage('#wpaigen-modal-message', 'PayPal encountered an error. Please try again.', 'error');
+                },
+                onCancel: function(data) {
+                    console.log('PayPal payment cancelled:', data);
+                    $('#wpaigen-paypal-loading').hide();
+                    $('#wpaigen-paypal-button').show();
+                    showMessage('#wpaigen-modal-message', 'Payment cancelled. You can try again anytime.', 'info');
+                }
+            }).render('#wpaigen-paypal-button').catch(function(error) {
+                console.error('PayPal button render error:', error);
+                showMessage('#wpaigen-modal-message', 'Failed to load PayPal button. Please refresh the page.', 'error');
+            });
+        }
+
+        // Midtrans payment handler
+        $('#wpaigen-midtrans-submit').on('click', function() {
             const email = $emailInput.val();
             if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
                 showMessage('#wpaigen-modal-message', 'Please enter a valid email address.', 'error');
                 return;
             }
 
-            $emailSubmitBtn.prop('disabled', true).text('Processing...');
+            $(this).prop('disabled', true).text('Processing...');
             showLoadingOverlay('Initiating Payment...');
 
             $.ajax({
@@ -221,36 +401,21 @@ jQuery(document).ready(function($) {
                         $emailModal.css('display', 'none'); // Close email modal
                         snap.pay(response.data.token, {
                             onSuccess: function(result){
-                                // This is triggered on successful payment
-                                console.log('Payment successful:', result);
-                                // The backend API should handle license activation via webhook
-                                // Here, we just display success message to user
+                                console.log('Midtrans payment successful:', result);
                                 $('#success-email-display').text(email);
                                 $successModal.css('display', 'flex');
 
-                                // Optimistically update plugin state (or trigger a license validate)
+                                // Update plugin state
                                 wpaigen_ajax_object.is_pro = true;
-                                wpaigen_ajax_object.daily_limit = -1; // Unlimited
+                                wpaigen_ajax_object.daily_limit = -1;
                                 updateDashboardStats();
-                                // Persist this change locally for immediate UI update
-                                // In a real scenario, you'd trigger a validation or expect a webhook
-                                // For now, let's just make sure UI reflects PRO
-                                $.ajax({
-                                    url: wpaigen_ajax_object.ajax_url,
-                                    type: 'POST',
-                                    data: {
-                                        action: 'wpaigen_validate_license', // Re-validate to get true status
-                                        nonce: wpaigen_ajax_object.nonce,
-                                        license_key: wpaigen_ajax_object.current_license_key // Use current, or expect new key from email
-                                    }
-                                });
                             },
                             onPending: function(result){
-                                console.log('Payment pending:', result);
+                                console.log('Midtrans payment pending:', result);
                                 showMessage('.wpaigen-dashboard .wpaigen-message', 'Payment is pending. Please complete the transaction.', 'info');
                             },
                             onError: function(result){
-                                console.log('Payment error:', result);
+                                console.log('Midtrans payment error:', result);
                                 showMessage('.wpaigen-dashboard .wpaigen-message', 'Payment failed. Please try again.', 'error');
                             },
                             onClose: function(){
@@ -259,7 +424,10 @@ jQuery(document).ready(function($) {
                             }
                         });
                     } else {
-                        showMessage('#wpaigen-modal-message', response.data.message, 'error');
+                        const errorMsg = response.data.message || 'Payment failed';
+                        const errorCode = response.data.code || 'UNKNOWN_ERROR';
+                        console.error('Midtrans transaction failed:', { errorCode, message: response.data });
+                        showMessage('#wpaigen-modal-message', `Error: ${errorMsg} (${errorCode})`, 'error');
                     }
                 },
                 error: function(xhr, status, error) {
@@ -267,7 +435,7 @@ jQuery(document).ready(function($) {
                     showMessage('#wpaigen-modal-message', 'An error occurred: ' + error, 'error');
                 },
                 complete: function() {
-                    $emailSubmitBtn.prop('disabled', false).text('Proceed to Payment');
+                    $('#wpaigen-midtrans-submit').prop('disabled', false).text('Proceed to Payment');
                 }
             });
         });
