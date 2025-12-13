@@ -5,7 +5,7 @@ Tags: ai, content generator, article generator, seo, content creation
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.4.0
+Stable tag: 4.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -127,7 +127,9 @@ The free version typically allows for 2 articles per day, with a maximum of 200 
 You can upgrade to the Pro version directly from the WPaigen AI Generator dashboard in your **WP admin area**. Click on the 'Get Pro Version' button and follow the secure payment process.
 
 = What payment methods are supported for the Pro version? =
-The Pro version uses Midtrans for secure payment processing, which supports various local and international payment methods.
+The Pro version supports multiple payment methods:
+* **Midtrans** - For Indonesian users (supports bank transfer, e-wallets, credit cards)
+* **PayPal** - For international users (supports Visa, MasterCard, American Express, and more)
 
 = Does the plugin support multiple languages? =
 The free version supports Indonesian and English. The Pro version unlocks support for many more languages.
@@ -144,6 +146,32 @@ Primarily, the plugin generates articles and blog posts. Its capabilities will e
 ---
 
 == Changelog ==
+
+= 4.0.0 =
+* **PayPal Payment Integration (Major New Feature)**
+    * Added PayPal payment method for international users
+    * Dynamic SDK loading with sandbox/production environment switching
+    * Support for PayPal currency conversion and international pricing
+    * Secure payment capture with automatic license activation
+    * Enhanced error handling and user-friendly payment flow
+
+* **Critical Bug Fixes**
+    * Fixed license downgrade bug where Pro licenses reverted to Free after plugin uninstall/reinstall
+    * Enhanced license persistence across plugin installations
+    * Improved license validation with offline resilience
+    * Smart uninstall process that preserves paid license data
+
+* **Backend & API Improvements**
+    * Enhanced voucher code handling for marketing site compatibility
+    * Improved dynamic pricing with real-time API updates
+    * Better error handling and logging for payment processing
+    * Optimized transaction management with better response parsing
+
+* **UI/UX Enhancements**
+    * Fixed pricing display and font size issues
+    * Improved payment modal responsiveness
+    * Better loading states and error messages
+    * Enhanced visual feedback for payment processing
 
 = 3.4.0 =
 * **Scheduled Articles (Major New Feature)**
@@ -170,6 +198,33 @@ Primarily, the plugin generates articles and blog posts. Its capabilities will e
     * Refresh button to get the latest trending topics
     * Modern card-based UI with responsive design
     * Supports license-based authentication for API access
+
+= 3.2.1 =
+* **API Configuration Update**
+    * Fixed API base URL configuration for improved connectivity
+    * Updated endpoint references for better service reliability
+    * Minor text updates and improvements
+
+= 3.2.0 =
+* **API Configuration Update**
+    * Updated API base URL to new production endpoint
+    * Enhanced connection stability and response times
+    * Improved error handling for API communications
+    * Updated documentation with new API references
+
+= 3.1.0 =
+* **API Endpoint Migration**
+    * Migrated API base URL to new server infrastructure
+    * Updated all API endpoint references for compatibility
+    * Improved response times and connection reliability
+    * Enhanced error handling for network requests
+
+= 2.1.0 =
+* **API Infrastructure Update**
+    * Updated API base URL to improved server infrastructure
+    * Enhanced connection stability and performance
+    * Updated plugin configuration for new API endpoints
+    * Improved reliability of article generation requests
 
 = 1.0.0 =
 * **Initial Release of WPaigen AI Generator.**
@@ -208,14 +263,26 @@ Primarily, the plugin generates articles and blog posts. Its capabilities will e
 
 == Upgrade Notice ==
 
+= 4.0.0 =
+**Major Update: PayPal Payments & License Bug Fix!** This update introduces PayPal payment integration for international users, allowing seamless payments in USD. We've also fixed a critical bug where Pro licenses were accidentally downgraded to Free after plugin uninstall/reinstall. Your paid licenses are now preserved permanently! Additional improvements include enhanced voucher code compatibility, better error handling, and improved UI responsiveness for payment flows. Upgrade now for the most stable and feature-rich version yet!
+
 = 3.4.0 =
 **Major Update: Scheduled Articles Feature!** This update introduces powerful content scheduling capabilities that allow you to plan and automate your content strategy. Schedule articles for automatic publication, track their status in real-time, and manage large numbers of scheduled posts with optimized pagination and search. The system includes automated processing, intelligent error handling, and a mobile-responsive interface. All scheduled articles are processed automatically every minute via WordPress cron, ensuring your content is published on time. The database has been optimized with new indexes for better performance, even with thousands of scheduled articles.
 
 = 3.3.0 =
-This update adds a powerful trending keywords sidebar in the article generation page. Discover what's currently trending, click any keyword to auto-fill the input, and create timely content that captures current search interest. No action required - the feature is automatically available!
+**New Feature: Google Trends Integration!** Discover what's trending right now with our powerful Google Trends sidebar. Get real-time keyword discovery with traffic statistics, click-to-select functionality for quick input, and a refresh button to get the latest trending topics. The modern card-based UI is fully responsive and integrates seamlessly with our license-based authentication system.
+
+= 3.2.1 =
+**Maintenance Update!** This update includes important API configuration fixes for improved connectivity and service reliability. We've updated endpoint references and made minor text improvements to enhance your user experience.
+
+= 3.2.0 =
+**Backend Infrastructure Update!** We've migrated to a new production API endpoint for significantly enhanced connection stability and faster response times. This update includes improved error handling and updated documentation for better service reliability.
+
+= 3.1.0 =
+**API Migration Update!** We've migrated our API infrastructure to a new server farm for improved performance and reliability. This update includes enhanced connection stability, faster response times, and improved error handling for all API requests. Your article generation experience will be noticeably smoother and more reliable.
 
 = 2.1.0 =
-Add domain field for create transaction pro license
+**Enhanced License System!** Added domain field support for Pro license creation and management. This update improves license tracking and enables better domain-based authentication for premium features. The upgrade also includes improved infrastructure stability for enhanced service reliability.
 
 = 2.0.0 =
 This update introduces enhanced license management, ensuring one license per domain, and includes important security updates for Midtrans integration. Significant internal refactoring also improves plugin performance and stability. It is highly recommended to update to this version.
